@@ -12,7 +12,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private Timer timer;
     private Player player;
     private boolean[] pressedKeys;
-    private ArrayList<Coin> coins;
 
     public GraphicsPanel() {
         timer = new Timer(2, this);
@@ -23,7 +22,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             System.out.println(e.getMessage());
         }
         player = new Player();
-        coins = new ArrayList<>();
         pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
         addKeyListener(this);
         addMouseListener(this);
@@ -39,19 +37,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         // UPDATED!
         g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
-
-        // this loop does two things:  it draws each Coin that gets placed with mouse clicks,
-        // and it also checks if the player has "intersected" (collided with) the Coin, and if so,
-        // the score goes up and the Coin is removed from the arraylist
-        for (int i = 0; i < coins.size(); i++) {
-            Coin coin = coins.get(i);
-            g.drawImage(coin.getImage(), coin.getxCoord(), coin.getyCoord(), null); // draw Coin
-            if (player.playerRect().intersects(coin.coinRect())) { // check for collision
-                player.collectCoin();
-                coins.remove(i);
-                i--;
-            }
-        }
 
         // draw score
         g.setFont(new Font("Courier New", Font.BOLD, 24));
@@ -115,18 +100,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public void mousePressed(MouseEvent e) { } // unimplemented
 
     @Override
-    public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {  // left mouse click
-            Point mouseClickLocation = e.getPoint();
-            Coin coin = new Coin(mouseClickLocation.x, mouseClickLocation.y);
-            coins.add(coin);
-        } else {
-            Point mouseClickLocation = e.getPoint();
-            if (player.playerRect().contains(mouseClickLocation)) {
-                player.turn();
-            }
-        }
-    }
+    public void mouseReleased(MouseEvent e) { } // unimplemented
 
     @Override
     public void mouseEntered(MouseEvent e) { } // unimplemented

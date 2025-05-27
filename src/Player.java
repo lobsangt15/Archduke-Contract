@@ -11,14 +11,12 @@ public class Player {
     private boolean facingRight;
     private int xCoord;
     private int yCoord;
-    private int score;
     private Animation animation;
 
     public Player() {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
         yCoord = 435;
-        score = 0;
         try {
             right = ImageIO.read(new File("src\\marioright.png"));
         } catch (IOException e) {
@@ -54,11 +52,6 @@ public class Player {
     public int getyCoord() {
         return yCoord;
     }
-
-    public int getScore() {
-        return score;
-    }
-
     //These functions are newly added to let the player turn left and right
     //These functions when combined with the updated getxCoord()
     //Allow the player to turn without needing separate images for left and right
@@ -113,10 +106,6 @@ public class Player {
         if (yCoord + MOVE_AMT <= 435) {
             yCoord += MOVE_AMT;
         }
-    }
-
-    public void collectCoin() {
-        score++;
     }
 
     public BufferedImage getPlayerImage() {
