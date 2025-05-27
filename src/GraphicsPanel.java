@@ -18,7 +18,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         timer = new Timer(2, this);
         timer.start();
         try {
-            background = ImageIO.read(new File("src/background.png"));
+            background = ImageIO.read(new File("src/lava-background.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
