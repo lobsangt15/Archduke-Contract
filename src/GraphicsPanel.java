@@ -40,7 +40,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         // draw score
         g.setFont(new Font("Courier New", Font.BOLD, 24));
-        g.drawString("Score: " + player.getScore(), 20, 40);
 
         // player moves left (A)
         if (pressedKeys[65]) {
