@@ -11,12 +11,20 @@ public class Player {
     private boolean facingRight;
     private int xCoord;
     private int yCoord;
-    private Animation animation;
+    private Animation idleAnimation;
+    private Animation movingAnimation;
+    private Animation attackAnimation;
+    private Animation currentAnimation;
+    private int healthPoints;
+    private int damageOutput;
 
     public Player() {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
         yCoord = 435;
+        healthPoints = 100;
+        damageOutput = 15;
+        currentAnimation = idleAnimation;
         try {
             right = ImageIO.read(new File("src\\marioright.png"));
         } catch (IOException e) {
@@ -35,7 +43,7 @@ public class Player {
                 System.out.println(e.getMessage());
             }
         }
-        animation = new Animation(images,50);
+        currentAnimation = new Animation(images,50);
     }
 
     //This function is changed from the previous version to let the player turn left and right
@@ -109,7 +117,7 @@ public class Player {
     }
 
     public BufferedImage getPlayerImage() {
-        return animation.getActiveFrame();  // updated
+        return currentAnimation.getActiveFrame();  // updated
     }
 
     // we use a "bounding Rectangle" for detecting collision
