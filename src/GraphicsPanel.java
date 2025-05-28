@@ -87,6 +87,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         pressedKeys[key] = false;
+        player.idle();
     }
 
     // MouseListener interface methods
