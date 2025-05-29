@@ -132,8 +132,8 @@ public class Player {
     public void moveUp() {
         if (yCoord - MOVE_AMT >= 0) {
             ArrayList<BufferedImage> images = new ArrayList<>();
-            for (int i = 1; i < 6; i++) {
-                String filename = "src/images/RunRight" + i + ".png";
+            for (int i = 1; i < 4; i++) {
+                String filename = "src/images/JumpRight" + i + ".png";
                 try {
                     images.add(ImageIO.read(new File(filename)));
                 }
