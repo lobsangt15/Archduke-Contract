@@ -26,7 +26,7 @@ public class Player {
         damageOutput = 15;
         currentAnimation = idleAnimation;
         try {
-            right = ImageIO.read(new File("src\\images/dwIdleRight1.png"));
+            right = ImageIO.read(new File("src/images/IdleRight1.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -34,13 +34,13 @@ public class Player {
         //The code below is used to create an ArrayList of BufferedImages to use for an Animation object
         //By creating all the BufferedImages beforehand, we don't have to worry about lagging trying to read image files during gameplay
         ArrayList<BufferedImage> images = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            String filename = "src\\images/IdleRight" + i + ".png";
+        for (int i = 1; i < 6; i++) {
+            String filename = "src/images/IdleRight" + i + ".png";
             try {
                 images.add(ImageIO.read(new File(filename)));
             }
             catch (IOException e) {
-                System.out.println(e.getMessage());
+                System.out.println(e.getMessage() + " " + filename);
             }
         }
         currentAnimation = new Animation(images,50);
@@ -77,13 +77,13 @@ public class Player {
 
     public void idle() {
         ArrayList<BufferedImage> images = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            String filename = "src\\images/IdleRight" + i + ".png";
+        for (int i = 1; i < 6; i++) {
+            String filename = "src/images/IdleRight" + i + ".png";
             try {
                 images.add(ImageIO.read(new File(filename)));
             }
             catch (IOException e) {
-                System.out.println(e.getMessage());
+                System.out.println(e.getMessage() + " " + filename);
             }
         }
         currentAnimation = new Animation(images,50);
@@ -109,13 +109,13 @@ public class Player {
     public void moveRight() {
         if (xCoord + MOVE_AMT <= 920) {
             ArrayList<BufferedImage> images = new ArrayList<>();
-            for (int i = 1; i < 16; i++) {
-                String filename = "src\\images/RunRight" + i + ".png";
+            for (int i = 1; i < 17; i++) {
+                String filename = "src/images/RunRight" + i + ".png";
                 try {
                     images.add(ImageIO.read(new File(filename)));
                 }
                 catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    System.out.println(e.getMessage() + " " + filename);
                 }
             }
             currentAnimation = new Animation(images,50);
@@ -132,13 +132,13 @@ public class Player {
     public void moveUp() {
         if (yCoord - MOVE_AMT >= 0) {
             ArrayList<BufferedImage> images = new ArrayList<>();
-            for (int i = 0; i < 6; i++) {
-                String filename = "src\\images/RunRight" + i + ".png";
+            for (int i = 1; i < 6; i++) {
+                String filename = "src/images/RunRight" + i + ".png";
                 try {
                     images.add(ImageIO.read(new File(filename)));
                 }
                 catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    System.out.println(e.getMessage() + " " + filename);
                 }
             }
             currentAnimation = new Animation(images,50);
