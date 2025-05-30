@@ -80,7 +80,7 @@ public class Player {
 
     public void idle() {
         ArrayList<BufferedImage> images = new ArrayList<>();
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i < 11; i++) {
             String filename = "src/images/IdleRight" + i + ".png";
             try {
                 images.add(ImageIO.read(new File(filename)));
@@ -112,7 +112,7 @@ public class Player {
     public void moveRight() {
         if (xCoord + MOVE_AMT <= 920) {
             ArrayList<BufferedImage> images = new ArrayList<>();
-            for (int i = 1; i < 17; i++) {
+            for (int i = 1; i < 11; i++) {
                 String filename = "src/images/RunRight" + i + ".png";
                 try {
                     images.add(ImageIO.read(new File(filename)));
