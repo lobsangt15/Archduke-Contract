@@ -7,7 +7,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class GraphicsPanel extends JPanel implements ActionListener, KeyListener, MouseListener {
-    private BufferedImage background;
+    private BufferedImage background1;
+    private BufferedImage backgroundAsset1;
     private Timer timer;
     private Player player;
     private boolean[] pressedKeys;
@@ -16,7 +17,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         timer = new Timer(2, this);
         timer.start();
         try {
-            background = ImageIO.read(new File("src/lava-background.png"));
+            background1 = ImageIO.read(new File("src/Background_0.png"));
+            backgroundAsset1 = ImageIO.read(new File("src/Background_1.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -32,7 +34,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         // the order that things get "painted" matter; we paint the background first
-        g.drawImage(background, 0, 0, null);
+        g.drawImage(background1, 0, 0, null);
+        g.drawImage(backgroundAsset1, 0, 0, null);
 
         // UPDATED!
         g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
