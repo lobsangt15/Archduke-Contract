@@ -55,8 +55,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             player.moveRight();
         }
 
-        // player moves up (W)
-        if (pressedKeys[87]) {
+        // player jumps (space bar)
+        if (pressedKeys[32]) {
             player.moveUp();
         }
 

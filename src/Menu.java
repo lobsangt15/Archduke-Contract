@@ -15,5 +15,7 @@ public class Menu extends JPanel {
         startButton.setFont(buttonFont);
         guideBookButton.setFont(buttonFont);
         exitButton.setFont(buttonFont);
+
+
     }
 }
