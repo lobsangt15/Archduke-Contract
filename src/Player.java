@@ -13,6 +13,8 @@ public class Player {
     private int yCoord;
     private Animation idleAnimation;
     private Animation movingAnimation;
+    private Animation jumpingAnimation;
+    private Animation jumpingAftermathAnimation;
     private Animation attackAnimation;
     private Animation currentAnimation;
     private int healthPoints;
@@ -49,14 +51,32 @@ public class Player {
         idleAnimation = new Animation(images,50);
 
         // up animation
-
-
+        images = new ArrayList<>();
+        for (int i = 1; i < 4; i++) {
+            String filename = "src/images/JumpRight" + i + ".png";
+            try {
+                images.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage() + " " + filename);
+            }
+        }
+        jumpingAnimation = new Animation(images,50);
 
 
 
         // down animation
-
-
+        images = new ArrayList<>();
+        for (int i = 1; i < 3; i++) {
+            String filename = "src/images/JumpAftermathRight" + i + ".png";
+            try {
+                images.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage() + " " + filename);
+            }
+        }
+        jumpingAftermathAnimation = new Animation(images,125);
 
         // left
 
@@ -151,24 +171,17 @@ public class Player {
 
     public void moveUp() {
         if (yCoord - MOVE_AMT >= 0) {
-            ArrayList<BufferedImage> images = new ArrayList<>();
-            for (int i = 1; i < 4; i++) {
-                String filename = "src/images/JumpRight" + i + ".png";
-                try {
-                    images.add(ImageIO.read(new File(filename)));
-                }
-                catch (IOException e) {
-                    System.out.println(e.getMessage() + " " + filename);
-                }
-            }
-            currentAnimation = new Animation(images,50);
+            currentAnimation = jumpingAnimation;
             yCoord -= MOVE_AMT;
         }
     }
 
     public void moveDown() {
         if (yCoord + MOVE_AMT <= 435) {
-            yCoord += MOVE_AMT;
+            if (yCoord - MOVE_AMT >= 0) {
+                currentAnimation = jumpingAftermathAnimation;
+                yCoord += MOVE_AMT;
+            }
         }
     }
 
