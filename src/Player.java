@@ -46,7 +46,43 @@ public class Player {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        currentAnimation = new Animation(images,50);
+        idleAnimation = new Animation(images,50);
+
+        // up animation
+
+
+
+
+
+        // down animation
+
+
+
+        // left
+
+
+
+
+        // right
+        images = new ArrayList<>();
+        for (int i = 1; i < 11; i++) {
+            String filename = "src/images/RunRight" + i + ".png";
+            try {
+                images.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage() + " " + filename);
+            }
+        }
+        movingAnimation = new Animation(images,50);
+
+
+
+
+
+        currentAnimation = idleAnimation;
+
+
     }
 
     //This function is changed from the previous version to let the player turn left and right
@@ -79,17 +115,7 @@ public class Player {
     }
 
     public void idle() {
-        ArrayList<BufferedImage> images = new ArrayList<>();
-        for (int i = 1; i < 11; i++) {
-            String filename = "src/images/IdleRight" + i + ".png";
-            try {
-                images.add(ImageIO.read(new File(filename)));
-            }
-            catch (IOException e) {
-                System.out.println(e.getMessage() + " " + filename);
-            }
-        }
-        currentAnimation = new Animation(images,50);
+        currentAnimation = idleAnimation;
     }
 
     public void faceRight() {
@@ -111,17 +137,7 @@ public class Player {
 
     public void moveRight() {
         if (xCoord + MOVE_AMT <= 920) {
-            ArrayList<BufferedImage> images = new ArrayList<>();
-            for (int i = 1; i < 11; i++) {
-                String filename = "src/images/RunRight" + i + ".png";
-                try {
-                    images.add(ImageIO.read(new File(filename)));
-                }
-                catch (IOException e) {
-                    System.out.println(e.getMessage() + " " + filename);
-                }
-            }
-            currentAnimation = new Animation(images,50);
+            currentAnimation = movingAnimation;
             xCoord += MOVE_AMT;
         }
     }
