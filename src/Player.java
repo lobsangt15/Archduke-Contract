@@ -144,6 +144,7 @@ public class Player {
 
     public void moveLeft() {
         if (xCoord - MOVE_AMT >= 0) {
+            currentAnimation = movingAnimation;
             xCoord -= MOVE_AMT;
         }
     }
