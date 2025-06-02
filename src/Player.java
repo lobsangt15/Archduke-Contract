@@ -29,7 +29,6 @@ public class Player {
         yCoord = 100;
         healthPoints = 100;
         damageOutput = 15;
-        currentAnimation = idleAnimation;
         try {
             right = ImageIO.read(new File("src/images/IdleRight1.png"));
         } catch (IOException e) {
