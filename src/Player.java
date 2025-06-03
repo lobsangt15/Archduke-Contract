@@ -184,6 +184,10 @@ public class Player {
         }
     }
 
+    public void Roll() {
+
+    }
+
     public BufferedImage getPlayerImage() {
         return currentAnimation.getActiveFrame();  // updated
     }
