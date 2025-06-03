@@ -13,6 +13,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private Player player;
     private boolean[] pressedKeys;
     private JButton speak;
+    private GoldenKnight boss1;
 
     public GraphicsPanel() {
         speak = new JButton("Speak");
@@ -25,6 +26,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             System.out.println(e.getMessage());
         }
         player = new Player();
+        boss1 = new GoldenKnight();
         pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
         addKeyListener(this);
         addMouseListener(this);
@@ -43,6 +45,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         // UPDATED!
         g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
+        g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
 
         // draw score
         g.setFont(new Font("Courier New", Font.BOLD, 24));
@@ -61,6 +64,11 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         // player jumps (space bar)
         if (pressedKeys[32]) {
+            player.moveUp();
+        }
+
+        // player jumps (w) added for convenience but will be deleted later
+        if (pressedKeys[87]) {
             player.moveUp();
         }
 

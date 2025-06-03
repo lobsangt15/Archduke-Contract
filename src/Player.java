@@ -47,7 +47,7 @@ public class Player {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        idleAnimation = new Animation(images,50);
+        idleAnimation = new Animation(images,100);
 
         // up animation
         images = new ArrayList<>();
