@@ -76,7 +76,12 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         }
         // player rolls (C)
         if (pressedKeys[67]) {
-            player.Roll();
+            if (!(player.getDirection())) {
+                player.RollLeft();
+            }
+            if (player.getDirection()) {
+                player.RollRight();
+            }
         }
         speak.setLocation(500, 500);
     }

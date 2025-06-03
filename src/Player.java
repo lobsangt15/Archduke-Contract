@@ -15,6 +15,7 @@ public class Player {
     private Animation movingAnimation;
     private Animation jumpingAnimation;
     private Animation jumpingAftermathAnimation;
+    private Animation rollingAnimation;
     private Animation attackAnimation;
     private Animation currentAnimation;
     private int healthPoints;
@@ -83,6 +84,21 @@ public class Player {
 
 
         // right
+
+        // roll
+        images = new ArrayList<>();
+        for (int i = 1; i < 13; i++) {
+            String filename = "src/images/RollRight" + i + ".png";
+            try {
+                images.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage() + " " + filename);
+            }
+        }
+        rollingAnimation = new Animation(images,75);
+
+        // right
         images = new ArrayList<>();
         for (int i = 1; i < 11; i++) {
             String filename = "src/images/RunRight" + i + ".png";
@@ -113,6 +129,10 @@ public class Player {
         } else {
             return (xCoord + (getPlayerImage().getWidth()));
         }
+    }
+
+    public boolean getDirection () {
+        return facingRight;
     }
 
     public int getyCoord() {
@@ -184,8 +204,18 @@ public class Player {
         }
     }
 
-    public void Roll() {
+    public void RollRight() {
+        if (xCoord + MOVE_AMT <= 920) {
+            currentAnimation = rollingAnimation;
+            xCoord += MOVE_AMT;
+        }
+    }
 
+    public void RollLeft() {
+        if (xCoord - MOVE_AMT >= 0) {
+            currentAnimation = rollingAnimation;
+            xCoord -= MOVE_AMT;
+        }
     }
 
     public BufferedImage getPlayerImage() {
