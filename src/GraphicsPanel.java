@@ -12,10 +12,10 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private Timer timer;
     private Player player;
     private boolean[] pressedKeys;
-    private JButton speak;
+    private JButton Quest;
 
     public GraphicsPanel() {
-        speak = new JButton("Speak");
+        Quest = new JButton("Speak");
         timer = new Timer(2, this);
         timer.start();
         try {
@@ -30,8 +30,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         addMouseListener(this);
         setFocusable(true); // this line of code + one below makes this panel active for keylistener events
         requestFocusInWindow();// see comment above
-        speak.addActionListener(this);
-        add(speak);
+        Quest.addActionListener(this);
+        add(Quest);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             player.moveDown();
         }
 
-        speak.setLocation(500, 500);
+        Quest.setLocation(500, 500);
     }
 
     // ActionListener interface method
