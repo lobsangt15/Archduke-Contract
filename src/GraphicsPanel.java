@@ -83,6 +83,9 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
                 player.RollRight();
             }
         }
+
+
+
         speak.setLocation(500, 500);
     }
 
@@ -110,18 +113,18 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         pressedKeys[key] = false;
         player.idle();
     }
-
     // MouseListener interface methods
     @Override
     public void mouseClicked(MouseEvent e) { }  // unimplemented because
-            // if you move your mouse while clicking, this method isn't
-            // called, so mouseReleased is best
+    // if you move your mouse while clicking, this method isn't
+    // called, so mouseReleased is best
 
     @Override
     public void mousePressed(MouseEvent e) { } // unimplemented
 
     @Override
-    public void mouseReleased(MouseEvent e) { } // unimplemented
+    public void mouseReleased(MouseEvent e) {
+    } // unimplemented
 
     @Override
     public void mouseEntered(MouseEvent e) { } // unimplemented
@@ -129,3 +132,4 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     @Override
     public void mouseExited(MouseEvent e) { } // unimplemented
 }
+
