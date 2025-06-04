@@ -111,7 +111,17 @@ public class Player {
         }
         movingAnimation = new Animation(images,50);
 
-
+        images = new ArrayList<>();
+        for (int i = 1; i < 5; i++) {
+            String filename = "src/images/AttackRight" + i + ".png";
+            try {
+                images.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage() + " " + filename);
+            }
+        }
+        attackAnimation = new Animation(images,100);
 
 
 
@@ -215,6 +225,20 @@ public class Player {
         if (xCoord - MOVE_AMT >= 0) {
             currentAnimation = rollingAnimation;
             xCoord -= MOVE_AMT;
+        }
+    }
+
+    public void AttackLeft() {
+        if (xCoord - MOVE_AMT >= 0) {
+            currentAnimation = attackAnimation;
+            xCoord -= MOVE_AMT;
+        }
+    }
+
+    public void AttackRight() {
+        if (xCoord + MOVE_AMT <= 920) {
+            currentAnimation = attackAnimation;
+            xCoord += MOVE_AMT;
         }
     }
 

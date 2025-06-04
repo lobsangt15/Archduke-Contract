@@ -70,6 +70,11 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             player.moveUp();
         }
 
+        // temporary
+        if (pressedKeys[87]) {
+            player.moveUp();
+        }
+
         // player moves down (S)
         if (pressedKeys[83]) {
             player.moveDown();
@@ -120,11 +125,23 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     // called, so mouseReleased is best
 
     @Override
-    public void mousePressed(MouseEvent e) { } // unimplemented
+    public void mousePressed(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            if (!(player.getDirection())) {
+                player.AttackLeft();
+            }
+            if (player.getDirection()) {
+                player.AttackRight();
+            }
+        }
+    } // unimplemented
 
     @Override
     public void mouseReleased(MouseEvent e) {
-    } // unimplemented
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            player.idle();
+        }
+    }
 
     @Override
     public void mouseEntered(MouseEvent e) { } // unimplemented
