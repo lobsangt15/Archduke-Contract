@@ -5,43 +5,48 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class NPC {
+public class FodderEnemy {
     private final int MOVE_AMT = 3;
     private BufferedImage right;
     private boolean facingRight;
     private int xCoord;
     private int yCoord;
     private Animation idleAnimation;
+    private Animation movingAnimation;
+    private Animation attackAnimation;
     private Animation currentAnimation;
+    private int healthPoints;
+    private int damageOutput;
 
-    public NPC() {
+    public FodderEnemy() {
         facingRight = true;
-        xCoord = 500; // starting position is (50, 435), right on top of ground
+        xCoord = 100; // starting position is (50, 435), right on top of ground
         yCoord = 100;
-
+        healthPoints = 1000;
+        damageOutput = 35;
         try {
-            right = ImageIO.read(new File("src/images/oldman-idle-1.png"));
+            right = ImageIO.read(new File("src/images/GoldenKnightIdleRight1.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
         ArrayList<BufferedImage> images = new ArrayList<>();
-        for (int i = 1; i < 9; i++) {
-            String filename = "src/images/oldman-idle-" + i + ".png";
+        for (int i = 1; i < 5; i++) {
+            String filename = "src/images/FodderEnemyIdle" + i + ".png";
             try {
                 images.add(ImageIO.read(new File(filename)));
             } catch (IOException e) {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        idleAnimation = new Animation(images, 125);
+        idleAnimation = new Animation(images, 100);
         currentAnimation = idleAnimation;
     }
     public int getxCoord() {
         if (facingRight) {
             return xCoord;
         } else {
-            return (xCoord + (getNPCImage().getWidth()));
+            return (xCoord + (getFodderEnemyImage().getWidth()));
         }
     }
 
@@ -50,18 +55,18 @@ public class NPC {
     }
 
     public int getHeight() {
-        return getNPCImage().getHeight();
+        return getFodderEnemyImage().getHeight();
     }
 
     public int getWidth() {
         if (facingRight) {
-            return getNPCImage().getWidth();
+            return getFodderEnemyImage().getWidth();
         } else {
-            return getNPCImage().getWidth() * -1;
+            return getFodderEnemyImage().getWidth() * -1;
         }
     }
 
-    public BufferedImage getNPCImage() {
+    public BufferedImage getFodderEnemyImage() {
         return currentAnimation.getActiveFrame();
     }
 }
