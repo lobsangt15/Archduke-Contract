@@ -25,7 +25,7 @@ public class FodderEnemy {
         healthPoints = 1000;
         damageOutput = 35;
         try {
-            right = ImageIO.read(new File("src/images/GoldenKnightIdleRight1.png"));
+            right = ImageIO.read(new File("src/images/FodderEnemyIdle1.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
