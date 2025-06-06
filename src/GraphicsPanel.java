@@ -15,6 +15,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private JButton speak;
     private GoldenKnight boss1;
     private FodderEnemy imp;
+    private boolean impAIStart = false;
 
     public GraphicsPanel() {
         speak = new JButton("Speak");
@@ -28,7 +29,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         }
         player = new Player();
         boss1 = new GoldenKnight();
-        imp = new FodderEnemy();
+        imp = new FodderEnemy(player);
         pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
         addKeyListener(this);
         addMouseListener(this);
@@ -92,6 +93,10 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
 
         speak.setLocation(500, 500);
+
+        if (impAIStart) {
+            imp.AI(player);
+        }
     }
 
     // ActionListener interface method
@@ -110,6 +115,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         // A = 65, D = 68, S = 83, W = 87, left = 37, up = 38, right = 39, down = 40, space = 32, enter = 10
         int key = e.getKeyCode();
         pressedKeys[key] = true;
+        impAIStart = true;
     }
 
     @Override
