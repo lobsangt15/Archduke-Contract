@@ -9,6 +9,7 @@ import java.io.IOException;
 public class GraphicsPanel extends JPanel implements ActionListener, KeyListener, MouseListener {
     private BufferedImage background1;
     private BufferedImage backgroundAsset1;
+    private BufferedImage Npc;
     private Timer timer;
     private Player player;
     private boolean[] pressedKeys;
@@ -25,6 +26,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         try {
             background1 = ImageIO.read(new File("src/Background_0.png"));
             backgroundAsset1 = ImageIO.read(new File("src/Background_1.png"));
+            Npc = ImageIO.read(new File("src/images/Costco Guys NPC.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -46,11 +48,12 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         // the order that things get "painted" matter; we paint the background first
         g.drawImage(background1, 0, 0, null);
         g.drawImage(backgroundAsset1, 0, 0, null);
+        g.drawImage(Npc, 400, 0, null);
 
         // UPDATED!
         g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
-        g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
-        g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
+        //g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
+        //g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
 
         // draw score
         g.setFont(new Font("Courier New", Font.BOLD, 24));
