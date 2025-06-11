@@ -9,24 +9,31 @@ import java.io.IOException;
 public class GraphicsPanel extends JPanel implements ActionListener, KeyListener, MouseListener {
     private BufferedImage background1;
     private BufferedImage backgroundAsset1;
+    private BufferedImage First_Scene;
     private BufferedImage Npc;
     private Timer timer;
     private Player player;
     private boolean[] pressedKeys;
-    private JButton speak;
     private GoldenKnight boss1;
     private FodderEnemy imp;
+    private JLabel label;
     private boolean impAIStart = false;
     private boolean goldenKnightAIStart = false;
+    private JButton accept;
+    private JButton decline;
+    private boolean inFirstScene;
+    private boolean inFinalScene;
 
     public GraphicsPanel() {
-        speak = new JButton("Speak");
+        accept = new JButton("ACCEPT");
+        decline = new JButton("DECLINE");
         timer = new Timer(16, this);
         timer.start();
         try {
             background1 = ImageIO.read(new File("src/Background_0.png"));
             backgroundAsset1 = ImageIO.read(new File("src/Background_1.png"));
-            Npc = ImageIO.read(new File("src/images/Costco Guys NPC.png"));
+            Npc = ImageIO.read(new File("src/images/Costco_Guys.png"));
+            First_Scene = ImageIO.read(new File("src/images/First_Scene.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -38,21 +45,33 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         addMouseListener(this);
         setFocusable(true); // this line of code + one below makes this panel active for keylistener events
         requestFocusInWindow();// see comment above
-        speak.addActionListener(this);
-        add(speak);
+        accept.addActionListener(this);
+        decline.addActionListener(this);
+        add(accept);
+        add(decline);
+        accept.setVisible(false);
+        decline.setVisible(false);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // the order that things get "painted" matter; we paint the background first
-        g.drawImage(background1, 0, 0, null);
-        g.drawImage(backgroundAsset1, 0, 0, null);
-        g.drawImage(Npc, 400, 0, null);
+        super.paintComponent(g);
+        if (!inFirstScene && !inFinalScene) {
+            // the order that things get "painted" matter; we paint the background first
+            g.drawImage(background1, 0, 0, null);
+            g.drawImage(backgroundAsset1, 0, 0, null);
+            g.drawImage(Npc, 1525, 500, null);
+            g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
+        } else if (inFirstScene) {
+            g.drawImage(First_Scene, 0, 0, null);
+            g.drawImage(player.getPlayerImage(), 300, 400, player.getWidth(), player.getHeight(), null);
+            g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
+        }
 
         // UPDATED!
-        g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
-        g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
+        //g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
+        //g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
         //g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
         player.applyGravity();
 
@@ -97,21 +116,47 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             }
         }
 
-
-
-        speak.setLocation(500, 500);
-
         if (impAIStart) {
             imp.AI(player);
         }
         if (goldenKnightAIStart) {
             boss1.AI(player);
         }
+
+        if (player.getxCoord() <= 1500 && player.getxCoord() >= 1196) {
+            accept.setVisible(true);
+            decline.setVisible(true);
+            // Draw white box
+            g.setColor(Color.WHITE);
+            g.fillRect(100, 600, 400, 100);
+
+            // Draw border
+            g.setColor(Color.BLACK);
+            g.drawRect(100, 600, 400, 100);
+
+            // Draw text
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString("Hey, it's the Costco Guys here.", 120, 630);
+            g.drawString("A golden knight has abducted the Rizzler.", 120, 655);
+            g.drawString("Find him for 5 big booms!", 120, 680);
+
+            accept.setLocation(100, 700);
+            decline.setLocation(200, 700);
+        } else {
+            accept.setVisible(false);
+            decline.setVisible(false);
+        }
+        System.out.println("Player X: " + player.getyCoord());
     }
 
     // ActionListener interface method
     @Override
     public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == accept) {
+            inFirstScene = true;
+        }
         repaint();
     }
 
@@ -159,6 +204,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             player.idle();
         }
     }
+
+
 
     @Override
     public void mouseEntered(MouseEvent e) { } // unimplemented

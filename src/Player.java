@@ -35,7 +35,7 @@ public class Player {
     public Player() {
         facingRight = true;
         xCoord = 300; // starting position is (50, 435), right on top of ground
-        yCoord = 100;
+        yCoord = 400;
         healthPoints = 100;
         damageOutput = 15;
         try {
@@ -134,8 +134,6 @@ public class Player {
 
 
         currentAnimation = idleAnimation;
-
-
     }
 
     //This function is changed from the previous version to let the player turn left and right
@@ -193,7 +191,7 @@ public class Player {
     }
 
     public void moveRight() {
-        if (xCoord + MOVE_AMT <= 920) {
+        if (xCoord + MOVE_AMT <= 1920) {
             if (!isJumping && !isFalling) {
                 currentAnimation = movingAnimation;
             }
