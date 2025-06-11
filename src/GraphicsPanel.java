@@ -65,7 +65,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
         } else if (inFirstScene) {
             g.drawImage(First_Scene, 0, 0, null);
-            g.drawImage(player.getPlayerImage(), 300, 400, player.getWidth(), player.getHeight(), null);
+            g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
             g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
         }
 
@@ -123,7 +123,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             boss1.AI(player);
         }
 
-        if (player.getxCoord() <= 1500 && player.getxCoord() >= 1196) {
+        if ((!inFirstScene && !inFinalScene) && player.getxCoord() <= 1500 && player.getxCoord() >= 1196) {
             accept.setVisible(true);
             decline.setVisible(true);
             // Draw white box
@@ -157,6 +157,9 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         if (source == accept) {
             inFirstScene = true;
         }
+        accept.setVisible(false);
+        decline.setVisible(false);
+        requestFocusInWindow();
         repaint();
     }
 
