@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Player {
-    private final int MOVE_AMT = 7;
+    private final int MOVE_AMT = 4;
     private BufferedImage right;
     private boolean facingRight;
     private int xCoord;
@@ -20,9 +20,17 @@ public class Player {
     private Animation currentAnimation;
     private int healthPoints;
     private int damageOutput;
-    private int fallSpeed;
-    private int gravity;
-    private int jumpStrength;
+    private boolean isJumping = false;
+    private boolean isFalling = false;
+    private boolean canDoubleJump = false;
+    private boolean doubleJumpUsed = false;
+    private int doubleJumpDelay = 15;
+    private int doubleJumpTimer = 0;
+    private int jumpVelocity = -18;
+    private int doubleJumpVelocity = -18;
+    private int currentVelocity = 0;
+    private int gravityForce = 1;
+    private final int groundY = 400; // adjust if your "floor" is different
 
     public Player() {
         facingRight = true;
@@ -186,22 +194,35 @@ public class Player {
 
     public void moveRight() {
         if (xCoord + MOVE_AMT <= 920) {
-            currentAnimation = movingAnimation;
+            if (!isJumping && !isFalling) {
+                currentAnimation = movingAnimation;
+            }
             xCoord += MOVE_AMT;
         }
     }
 
     public void moveLeft() {
         if (xCoord - MOVE_AMT >= 0) {
-            currentAnimation = movingAnimation;
+            if (!isJumping && !isFalling) {
+                currentAnimation = movingAnimation;
+            }
             xCoord -= MOVE_AMT;
         }
     }
 
-    public void moveUp() {
-        if (yCoord - MOVE_AMT >= 0) {
+    public void jump() {
+        if (!isJumping && !isFalling) {
+            currentVelocity = jumpVelocity;
+            isJumping = true;
+            doubleJumpUsed = false;
+            doubleJumpTimer = 0;
             currentAnimation = jumpingAnimation;
-            yCoord -= MOVE_AMT;
+        } else if (canDoubleJump && !doubleJumpUsed) {
+            currentVelocity = doubleJumpVelocity;
+            isJumping = true;
+            isFalling = false;
+            doubleJumpUsed = true;
+            currentAnimation = jumpingAnimation;
         }
     }
 
@@ -239,6 +260,35 @@ public class Player {
         if (xCoord + MOVE_AMT <= 920) {
             currentAnimation = attackAnimation;
             xCoord += MOVE_AMT;
+        }
+    }
+
+    public void applyGravity() {
+        if (isJumping || isFalling) {
+            yCoord += currentVelocity;
+            currentVelocity += gravityForce;
+
+            if (currentVelocity > 0 && isJumping) {
+                isJumping = false;
+                isFalling = true;
+                currentAnimation = jumpingAftermathAnimation;
+            }
+            if (!canDoubleJump && !doubleJumpUsed) {
+                doubleJumpTimer++;
+                if (doubleJumpTimer >= doubleJumpDelay) {
+                    canDoubleJump = true;
+                }
+            }
+            if (yCoord >= groundY) {
+                yCoord = groundY;
+                isJumping = false;
+                isFalling = false;
+                doubleJumpUsed = false;
+                canDoubleJump = false;
+                doubleJumpTimer = 0;
+                currentVelocity = 0;
+                currentAnimation = idleAnimation;
+            }
         }
     }
 

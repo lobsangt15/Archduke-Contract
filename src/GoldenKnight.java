@@ -20,7 +20,7 @@ public class GoldenKnight extends Player {
     private int damageOutput;
     private int originalSpawnPoint;
     private Player player;
-    private int attackRange = 200;
+    private int attackRange = 150;
     private boolean isAttacking = false;
     private boolean isReturning = false;
     private boolean isOnCooldown = false;
@@ -28,13 +28,13 @@ public class GoldenKnight extends Player {
     private int endlag = 60;
     private int attackTimer = 0;
     private int attackDuration = 30;
-    private int speed = 70;
+    private int speed = 1;
 
     public GoldenKnight(Player player) {
         this.player = player;
         facingRight = false;
         xCoord = 700; // starting position is (50, 435), right on top of ground
-        yCoord = 100;
+        yCoord = 200;
         originalSpawnPoint = xCoord;
         healthPoints = 1000;
         damageOutput = 35;
@@ -92,6 +92,8 @@ public class GoldenKnight extends Player {
             return getGoldenKnightImage().getWidth() * -1;
         }
     }
+
+
 
     public void AI(Player player) {
         if (isOnCooldown) {
@@ -152,9 +154,16 @@ public class GoldenKnight extends Player {
                 }
             }
             }
+
     }
 
+
+
     public BufferedImage getGoldenKnightImage() {
+        if (currentAnimation == null) {
+            System.out.println("Null, so it will be set to idle.");
+            currentAnimation = idleAnimation;
+        }
         return currentAnimation.getActiveFrame();
     }
 }

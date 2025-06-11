@@ -21,7 +21,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
     public GraphicsPanel() {
         speak = new JButton("Speak");
-        timer = new Timer(2, this);
+        timer = new Timer(16, this);
         timer.start();
         try {
             background1 = ImageIO.read(new File("src/Background_0.png"));
@@ -52,8 +52,9 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         // UPDATED!
         g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
-        //g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
+        g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
         //g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
+        player.applyGravity();
 
         // draw score
         g.setFont(new Font("Courier New", Font.BOLD, 24));
@@ -72,18 +73,20 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         // player jumps (space bar)
         if (pressedKeys[32]) {
-            player.moveUp();
+            player.jump();
         }
 
         // temporary
         if (pressedKeys[87]) {
-            player.moveUp();
+            player.jump();
         }
 
         // player moves down (S)
         if (pressedKeys[83]) {
             player.moveDown();
         }
+
+
         // player rolls (C)
         if (pressedKeys[67]) {
             if (!(player.getDirection())) {
