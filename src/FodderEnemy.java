@@ -20,6 +20,8 @@ public class FodderEnemy extends Player {
     private Player player;
     private int attackRange = 30;
     private int followRange = 75;
+    private boolean isAttacking = false;
+    private boolean isAlive = true;
 
     public FodderEnemy(Player player) {
         this.player = player;
@@ -29,14 +31,14 @@ public class FodderEnemy extends Player {
         healthPoints = 1000;
         damageOutput = 35;
         try {
-            right = ImageIO.read(new File("src/images/FodderEnemyIdle1.png"));
+            right = ImageIO.read(new File("src/images/demon_idle_1.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
         ArrayList<BufferedImage> images = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
-            String filename = "src/images/FodderEnemyIdle" + i + ".png";
+        for (int i = 1; i < 7; i++) {
+            String filename = "src/images/demon_idle_" + i + ".png";
             try {
                 images.add(ImageIO.read(new File(filename)));
             } catch (IOException e) {
@@ -48,8 +50,8 @@ public class FodderEnemy extends Player {
 
 
         images = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
-            String filename = "src/images/FodderEnemyFlying" + i + ".png";
+        for (int i = 1; i < 13; i++) {
+            String filename = "src/images/demon_walk_" + i + ".png";
             try {
                 images.add(ImageIO.read(new File(filename)));
             }
@@ -60,8 +62,8 @@ public class FodderEnemy extends Player {
         movingAnimation = new Animation(images,150);
 
         images = new ArrayList<>();
-        for (int i = 1; i < 9; i++) {
-            String filename = "src/images/FodderEnemyAttack" + i + ".png";
+        for (int i = 1; i < 16; i++) {
+            String filename = "src/images/demon_cleave_" + i + ".png";
             try {
                 images.add(ImageIO.read(new File(filename)));
             }
@@ -98,23 +100,42 @@ public class FodderEnemy extends Player {
 
 
     public void AI(Player player) {
+        if (!isAlive) return;
+
         int playerXCoord = player.getxCoord();
         int distance = Math.abs(playerXCoord - xCoord);
 
-        if (distance < attackRange) {
-            currentAnimation = attackAnimation;
-        } else if (distance <= followRange) {
-            currentAnimation = movingAnimation;
-        }
-        if (playerXCoord < xCoord) {
-            xCoord -= MOVE_AMT;
-            facingRight = true;
-        } else if (playerXCoord > xCoord) {
-            xCoord += MOVE_AMT;
-            facingRight = false;
-        }
-        else {
+        if (healthPoints <= 0) {
+            isAlive = false;
             currentAnimation = idleAnimation;
+            return;
+        }
+
+        // Always face the player
+        facingRight = playerXCoord >= xCoord;
+
+        if (distance < attackRange) {
+            if (!isAttacking || attackAnimation.isDone()) {
+                attackAnimation.reset();
+                currentAnimation = attackAnimation;
+                isAttacking = true;
+
+                // Optional: deal damage here
+            }
+            // Do not move while attacking
+        } else if (distance <= followRange) {
+            if (!isAttacking || attackAnimation.isDone()) {
+                isAttacking = false;
+                currentAnimation = movingAnimation;
+                if (playerXCoord < xCoord) {
+                    xCoord -= MOVE_AMT;
+                } else {
+                    xCoord += MOVE_AMT;
+                }
+            }
+        } else {
+            currentAnimation = idleAnimation;
+            isAttacking = false;
         }
     }
 

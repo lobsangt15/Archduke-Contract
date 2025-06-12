@@ -199,16 +199,28 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
                 player.AttackRight();
             }
         }
-    } // unimplemented
+    }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (SwingUtilities.isLeftMouseButton(e)) {
+        if (player.isAttacking()) {
+            Timer waitForAttack = new Timer(50, null);
+            waitForAttack.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    if (player.attackAnimation.isDone()) {
+                        player.isAttacking = false;
+                        waitForAttack.stop();
+
+                        player.idle();
+                        System.out.println("Attack animation finished!");
+                    }
+                }
+            });
+            waitForAttack.start();
+        } else {
             player.idle();
         }
     }
-
-
 
     @Override
     public void mouseEntered(MouseEvent e) { } // unimplemented

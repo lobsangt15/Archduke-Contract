@@ -8,6 +8,7 @@ public class Animation implements ActionListener {
     private ArrayList<BufferedImage> frames;
     private Timer timer;
     private int currentFrame;
+    private boolean done;
 
     public Animation(ArrayList<BufferedImage> frames, int delay) {
         this.frames = frames;
@@ -27,5 +28,16 @@ public class Animation implements ActionListener {
             //In other words, this allows our animation to loop
             currentFrame = (currentFrame + 1) % frames.size();
         }
+    }
+
+    public boolean isDone() {
+        done = currentFrame >= frames.size() - 1;
+        return done;
+    }
+
+    public void reset() {
+        currentFrame = 0;
+        done = false;
+        timer.restart();
     }
 }

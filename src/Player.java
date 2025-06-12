@@ -16,11 +16,12 @@ public class Player {
     private Animation jumpingAnimation;
     private Animation jumpingAftermathAnimation;
     private Animation rollingAnimation;
-    private Animation attackAnimation;
+    Animation attackAnimation;
     private Animation currentAnimation;
     private int healthPoints;
     private int damageOutput;
     private boolean isJumping = false;
+    boolean isAttacking = false;
     private boolean isFalling = false;
     private boolean canDoubleJump = false;
     private boolean doubleJumpUsed = false;
@@ -129,11 +130,13 @@ public class Player {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        attackAnimation = new Animation(images,100);
-
-
+        attackAnimation = new Animation(images,50);
 
         currentAnimation = idleAnimation;
+    }
+
+    public boolean isAttacking() {
+        return isAttacking;
     }
 
     //This function is changed from the previous version to let the player turn left and right
@@ -191,7 +194,7 @@ public class Player {
     }
 
     public void moveRight() {
-        if (xCoord + MOVE_AMT <= 1920) {
+        if (xCoord + MOVE_AMT <= 1520) {
             if (!isJumping && !isFalling) {
                 currentAnimation = movingAnimation;
             }
@@ -200,7 +203,7 @@ public class Player {
     }
 
     public void moveLeft() {
-        if (xCoord - MOVE_AMT >= 0) {
+        if (xCoord - MOVE_AMT >= -200) {
             if (!isJumping && !isFalling) {
                 currentAnimation = movingAnimation;
             }
@@ -225,7 +228,7 @@ public class Player {
     }
 
     public void moveDown() {
-        if (yCoord + MOVE_AMT <= 435) {
+        if (yCoord + MOVE_AMT <= 588) {
             if (yCoord - MOVE_AMT >= 0) {
                 currentAnimation = jumpingAftermathAnimation;
                 yCoord += MOVE_AMT;
@@ -234,30 +237,31 @@ public class Player {
     }
 
     public void RollRight() {
-        if (xCoord + MOVE_AMT <= 920) {
+        if (xCoord + MOVE_AMT <= 1520) {
             currentAnimation = rollingAnimation;
             xCoord += MOVE_AMT;
         }
     }
 
     public void RollLeft() {
-        if (xCoord - MOVE_AMT >= 0) {
+        if (xCoord - MOVE_AMT >= -200) {
             currentAnimation = rollingAnimation;
             xCoord -= MOVE_AMT;
         }
     }
 
-    public void AttackLeft() {
-        if (xCoord - MOVE_AMT >= 0) {
+    public void AttackRight() {
+        if (xCoord + MOVE_AMT <= 1520) {
             currentAnimation = attackAnimation;
-            xCoord -= MOVE_AMT;
+            isAttacking = true;
+            // Don't move during attack if you want a static position
         }
     }
 
-    public void AttackRight() {
-        if (xCoord + MOVE_AMT <= 920) {
+    public void AttackLeft() {
+        if (xCoord - MOVE_AMT >= -200) {
             currentAnimation = attackAnimation;
-            xCoord += MOVE_AMT;
+            isAttacking = true;
         }
     }
 
