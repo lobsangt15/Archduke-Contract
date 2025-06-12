@@ -38,7 +38,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             background1 = ImageIO.read(new File("src/Background_0.png"));
             backgroundAsset1 = ImageIO.read(new File("src/Background_1.png"));
             Npc = ImageIO.read(new File("src/images/Costco_Guys.png"));
-            First_Scene = ImageIO.read(new File("src/images/First_Scene.png"));
+            First_Scene = ImageIO.read(new File("src/images/First_Scene.jpg"));
             titleImage = ImageIO.read(new File("src/images/TITLEARCHKNIGHT.png"));
             luciferTitleImage = ImageIO.read(new File("src/images/LUCIFERTITLE.png"));
         } catch (IOException e) {
@@ -86,6 +86,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
         } else if (inFirstScene) {
             g.drawImage(First_Scene, 0, 0, null);
+            player.setyCoord(600);
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
 
             g.drawImage(goldenKnight.getGoldenKnightImage(), goldenKnight.getxCoord(), goldenKnight.getyCoord(), goldenKnight.getWidth(), goldenKnight.getHeight(), null);
