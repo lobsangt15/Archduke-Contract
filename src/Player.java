@@ -298,6 +298,10 @@ public class Player {
         return currentAnimation.getActiveFrame();  // updated
     }
 
+    public int getHealth() {
+        return healthPoints;
+    }
+
     // we use a "bounding Rectangle" for detecting collision
     public Rectangle playerRect() {
         int imageHeight = getPlayerImage().getHeight();

@@ -100,7 +100,9 @@ public class FodderEnemy extends Player {
 
 
     public void AI(Player player) {
-        if (!isAlive) return;
+        if (!isAlive) {
+            return;
+        }
 
         int playerXCoord = player.getxCoord();
         int distance = Math.abs(playerXCoord - xCoord);
@@ -113,6 +115,7 @@ public class FodderEnemy extends Player {
 
         // Always face the player
         facingRight = playerXCoord >= xCoord;
+
 
         if (distance < attackRange) {
             if (!isAttacking || attackAnimation.isDone()) {

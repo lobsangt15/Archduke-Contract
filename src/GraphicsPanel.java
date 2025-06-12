@@ -56,7 +56,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        super.paintComponent(g);
         if (!inFirstScene && !inFinalScene) {
             // the order that things get "painted" matter; we paint the background first
             g.drawImage(background1, 0, 0, null);
@@ -73,6 +72,10 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         //g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
         //g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
         //g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
+        Font font = new Font("Verdana", Font.BOLD, 40);
+        g.setFont(font);
+        g.setColor(Color.RED);
+        g.drawString("Player Health: " + player.getHealth(), 20, 70);
         player.applyGravity();
 
         // draw score
