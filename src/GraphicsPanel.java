@@ -1,3 +1,4 @@
+// GraphicsPanel.java
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -5,20 +6,20 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GraphicsPanel extends JPanel implements ActionListener, KeyListener, MouseListener {
     private BufferedImage background1;
     private BufferedImage backgroundAsset1;
     private BufferedImage First_Scene;
     private BufferedImage Npc;
+    private BufferedImage titleImage;
+    private BufferedImage luciferTitleImage;
     private Timer timer;
     private Player player;
     private boolean[] pressedKeys;
-    private GoldenKnight boss1;
-    private FodderEnemy imp;
+    private GoldenKnight goldenKnight;
     private JLabel label;
-    private boolean impAIStart = false;
-    private boolean goldenKnightAIStart = false;
     private JButton accept;
     private JButton decline;
     private boolean inFirstScene;
@@ -29,8 +30,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         decline = new JButton("DECLINE");
 
         player = new Player();
-        boss1 = new GoldenKnight(player);
-        imp = new FodderEnemy(player);
+        goldenKnight = new GoldenKnight(player);
+
         pressedKeys = new boolean[128];
 
         try {
@@ -38,8 +39,26 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             backgroundAsset1 = ImageIO.read(new File("src/Background_1.png"));
             Npc = ImageIO.read(new File("src/images/Costco_Guys.png"));
             First_Scene = ImageIO.read(new File("src/images/First_Scene.png"));
+            titleImage = ImageIO.read(new File("src/images/TITLEARCHKNIGHT.png"));
+            luciferTitleImage = ImageIO.read(new File("src/images/LUCIFERTITLE.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            titleImage = new BufferedImage(500, 100, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = titleImage.createGraphics();
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0,0,500,100);
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("TITLE", 200, 50);
+            g2d.dispose();
+
+            luciferTitleImage = new BufferedImage(500, 100, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2dLucifer = luciferTitleImage.createGraphics();
+            g2dLucifer.setColor(Color.RED);
+            g2dLucifer.fillRect(0,0,500,100);
+            g2dLucifer.setColor(Color.BLACK);
+            g2dLucifer.drawString("LUCIFER", 180, 50);
+            g2dLucifer.dispose();
+            System.out.println("Using placeholder images for titles due to loading error.");
         }
 
         addKeyListener(this);
@@ -68,13 +87,26 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         } else if (inFirstScene) {
             g.drawImage(First_Scene, 0, 0, null);
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
-            g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
+
+            g.drawImage(goldenKnight.getGoldenKnightImage(), goldenKnight.getxCoord(), goldenKnight.getyCoord(), goldenKnight.getWidth(), goldenKnight.getHeight(), null);
+
+            for (Spike s : goldenKnight.getActiveSpikes()) {
+                g.drawImage(s.getImage(), s.getX(), s.getY(), null);
+            }
+        }
+
+        BufferedImage currentTitleImage = goldenKnight.isPhaseTwo() ? luciferTitleImage : titleImage;
+        if (currentTitleImage != null) {
+            int titleX = (getWidth() - currentTitleImage.getWidth()) / 2;
+            int titleY = 20;
+            g.drawImage(currentTitleImage, titleX, titleY, null);
         }
 
         Font font = new Font("Verdana", Font.BOLD, 40);
         g.setFont(font);
         g.setColor(Color.RED);
         g.drawString("Player Health: " + player.getHealth(), 20, 70);
+        g.drawString("Golden Knight Health: " + goldenKnight.getHealth(), 20, 120);
 
         if (pressedKeys[65]) {
             player.faceLeft();
@@ -88,13 +120,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         if (pressedKeys[83]) {
             player.moveDown();
-        }
-
-        if (impAIStart) {
-            imp.AI(player);
-        }
-        if (goldenKnightAIStart) {
-            boss1.AI(player);
         }
 
         if ((!inFirstScene && !inFinalScene) && player.getxCoord() <= 1500 && player.getxCoord() >= 1196) {
@@ -126,6 +151,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         Object source = e.getSource();
         if (source == accept) {
             inFirstScene = true;
+            player.setxCoord(50);
+            player.setyCoord(player.getGroundY() - player.getHeight());
         }
         accept.setVisible(false);
         decline.setVisible(false);
@@ -134,7 +161,56 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         player.applyGravity();
         player.updateRoll();
 
+        if (inFirstScene) {
+            goldenKnight.AI(player);
+            handleCollisions();
+        }
+
+        if (player.isAttacking() && player.attackAnimation.isDone()) {
+            player.isAttacking = false;
+            player.idle();
+            System.out.println("Player attack animation finished!");
+        }
+
         repaint();
+    }
+
+    private void handleCollisions() {
+        Rectangle playerRect = player.playerRect();
+
+        if (player.isAttacking()) {
+            Rectangle playerAttackHitbox = player.getPlayerAttackHitbox();
+            if (playerAttackHitbox != null && playerAttackHitbox.intersects(goldenKnight.getBossRect()) && !goldenKnight.isDead() && !goldenKnight.isRebirthing()) {
+                goldenKnight.takeDamage(player.getDamageOutput());
+                System.out.println("Player successfully hit Golden Knight!");
+            }
+        }
+
+        if (goldenKnight.isAttacking()) {
+            Rectangle goldenKnightAttackHitbox = goldenKnight.getAttackHitbox();
+            if (goldenKnightAttackHitbox != null && goldenKnightAttackHitbox.intersects(playerRect)) {
+                player.takeDamage(goldenKnight.getDamageOutput());
+                System.out.println("Golden Knight hit player! Player Health: " + player.getHealth());
+            }
+        }
+
+        ArrayList<Spike> spikesToRemove = new ArrayList<>();
+        for (Spike s : goldenKnight.getActiveSpikes()) {
+            s.update();
+            if (s.isActive() && playerRect.intersects(s.getRect())) {
+                if (player.isJumping()) {
+                    System.out.println("Player jumped over spike. Spike removed.");
+                } else {
+                    player.takeDamage(s.getDamage());
+                    System.out.println("Player hit by spike! Player Health: " + player.getHealth());
+                }
+                s.deactivate();
+            }
+            if (!s.isActive()) {
+                spikesToRemove.add(s);
+            }
+        }
+        goldenKnight.getActiveSpikes().removeAll(spikesToRemove);
     }
 
     @Override
@@ -156,9 +232,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         if (key == 87 && !player.isJumping() && !player.isFalling()) {
             player.jump();
         }
-
-        impAIStart = true;
-        goldenKnightAIStart = true;
     }
 
     @Override
@@ -176,34 +249,18 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     @Override
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            if (!(player.getDirection())) {
-                player.AttackLeft();
-            }
-            if (player.getDirection()) {
-                player.AttackRight();
+            if (!player.isAttacking() && !player.isRolling() && !player.isJumping() && !player.isFalling()) {
+                if (!(player.getDirection())) {
+                    player.AttackLeft();
+                } else {
+                    player.AttackRight();
+                }
             }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (player.isAttacking()) {
-            Timer waitForAttack = new Timer(50, null);
-            waitForAttack.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    if (player.attackAnimation.isDone()) {
-                        player.isAttacking = false;
-                        waitForAttack.stop();
-
-                        player.idle();
-                        System.out.println("Attack animation finished!");
-                    }
-                }
-            });
-            waitForAttack.start();
-        } else {
-            player.idle();
-        }
     }
 
     @Override

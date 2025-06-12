@@ -1,3 +1,4 @@
+// Player.java
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -31,21 +32,25 @@ public class Player {
     private int doubleJumpVelocity = -18;
     private int currentVelocity = 0;
     private int gravityForce = 1;
-    private final int groundY = 400;
+    private final int groundY = 1150;
+    private final int PLAYER_ATTACK_RANGE = 70;
 
     private boolean isRolling = false;
 
     public Player() {
         facingRight = true;
         xCoord = 300;
-        yCoord = 400;
-        healthPoints = 100;
-        damageOutput = 15;
+
         try {
             right = ImageIO.read(new File("src/images/IdleRight1.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            right = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
         }
+        yCoord = groundY - right.getHeight();
+
+        healthPoints = 100;
+        damageOutput = 5;
 
         ArrayList<BufferedImage> images = new ArrayList<>();
         for (int i = 1; i < 6; i++) {
@@ -138,6 +143,18 @@ public class Player {
         return isFalling;
     }
 
+    public int getGroundY() {
+        return groundY;
+    }
+
+    public void setxCoord(int x) {
+        this.xCoord = x;
+    }
+
+    public void setyCoord(int y) {
+        this.yCoord = y;
+    }
+
     public int getxCoord() {
         if (facingRight) {
             return xCoord;
@@ -166,6 +183,24 @@ public class Player {
         }
     }
 
+    public Rectangle getPlayerAttackHitbox() {
+        if (isAttacking) {
+            int hitboxX;
+            int hitboxY = yCoord;
+            int hitboxWidth = PLAYER_ATTACK_RANGE;
+            int hitboxHeight = getHeight();
+
+            if (facingRight) {
+                hitboxX = xCoord + getPlayerImage().getWidth() - (PLAYER_ATTACK_RANGE / 2);
+            } else {
+                hitboxX = xCoord - PLAYER_ATTACK_RANGE / 2;
+            }
+            return new Rectangle(hitboxX, hitboxY, Math.abs(hitboxWidth), hitboxHeight);
+        }
+        return null;
+    }
+
+
     public void idle() {
         if (!isJumping && !isFalling && !isRolling && !isAttacking) {
             currentAnimation = idleAnimation;
@@ -190,7 +225,7 @@ public class Player {
 
     public void moveRight() {
         if (!isJumping && !isFalling && !isRolling && !isAttacking) {
-            if (xCoord + MOVE_AMT <= 1520) {
+            if (xCoord + MOVE_AMT <= 1920 - getWidth()) {
                 currentAnimation = movingAnimation;
                 xCoord += MOVE_AMT;
             }
@@ -199,7 +234,7 @@ public class Player {
 
     public void moveLeft() {
         if (!isJumping && !isFalling && !isRolling && !isAttacking) {
-            if (xCoord - MOVE_AMT >= -200) {
+            if (xCoord - MOVE_AMT >= 0) {
                 currentAnimation = movingAnimation;
                 xCoord -= MOVE_AMT;
             }
@@ -225,11 +260,9 @@ public class Player {
     }
 
     public void moveDown() {
-        if (yCoord + MOVE_AMT <= 588) {
-            if (yCoord - MOVE_AMT >= 0) {
-                currentAnimation = jumpingAftermathAnimation;
-                yCoord += MOVE_AMT;
-            }
+        if (yCoord + MOVE_AMT <= groundY) {
+            currentAnimation = jumpingAftermathAnimation;
+            yCoord += MOVE_AMT;
         }
     }
 
@@ -253,6 +286,8 @@ public class Player {
                 isRolling = false;
                 idle();
             }
+            if (xCoord < 0) xCoord = 0;
+            if (xCoord > 1920 - getWidth()) xCoord = 1920 - getWidth();
         }
     }
 
@@ -291,8 +326,8 @@ public class Player {
                     canDoubleJump = true;
                 }
             }
-            if (yCoord >= groundY) {
-                yCoord = groundY;
+            if (yCoord >= groundY - getHeight()) {
+                yCoord = groundY - getHeight();
                 isJumping = false;
                 isFalling = false;
                 doubleJumpUsed = false;
@@ -312,6 +347,18 @@ public class Player {
 
     public int getHealth() {
         return healthPoints;
+    }
+
+    public int getDamageOutput() {
+        return damageOutput;
+    }
+
+    public void takeDamage(int damage) {
+        this.healthPoints -= damage;
+        if (this.healthPoints < 0) {
+            this.healthPoints = 0;
+        }
+        System.out.println("Player took " + damage + " damage. Current health: " + this.healthPoints);
     }
 
     public Rectangle playerRect() {

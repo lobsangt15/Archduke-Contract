@@ -1,3 +1,4 @@
+// Animation.java
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,17 +33,45 @@ public class Animation implements ActionListener {
         return frames;
     }
 
+    public Timer getTimer() {
+        return timer;
+    }
+
+    public void setCurrentFrame(int frameIndex) {
+        if (frameIndex >= 0 && frameIndex < frames.size()) {
+            this.currentFrame = frameIndex;
+        }
+    }
+
+    public void decrementFrame() {
+        if (currentFrame > 0) {
+            currentFrame--;
+        } else {
+            if (singleCycle) {
+                timer.stop();
+                done = true;
+            } else {
+                currentFrame = frames.size() - 1;
+            }
+        }
+    }
+
+    public int getCurrentFrame() {
+        return currentFrame;
+    }
+
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof Timer) {
-            currentFrame++;
-            if (currentFrame >= frames.size()) {
-                if (singleCycle) {
-                    currentFrame = frames.size() - 1;
-                    timer.stop();
-                    done = true;
-                } else {
+            if (!done && !singleCycle) {
+                currentFrame++;
+                if (currentFrame >= frames.size()) {
                     currentFrame = 0;
                 }
+            } else if (singleCycle && !done && currentFrame < frames.size() - 1) {
+                currentFrame++;
+            } else if (singleCycle && currentFrame == frames.size() - 1) {
+                timer.stop();
+                done = true;
             }
         }
     }
