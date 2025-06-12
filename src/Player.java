@@ -24,6 +24,7 @@ public class Player {
     private boolean isJumping = false;
     boolean isAttacking = false;
     private boolean isFalling = false;
+    private boolean isMoving = false;
     private boolean canDoubleJump = false;
     private boolean doubleJumpUsed = false;
     private int doubleJumpDelay = 15;
@@ -40,6 +41,7 @@ public class Player {
     public Player() {
         facingRight = true;
         xCoord = 300;
+        yCoord = 600;
 
         try {
             right = ImageIO.read(new File("src/images/IdleRight1.png"));
@@ -47,10 +49,9 @@ public class Player {
             System.out.println(e.getMessage());
             right = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
         }
-        yCoord = groundY - right.getHeight();
 
         healthPoints = 100;
-        damageOutput = 5;
+        damageOutput = 10;
 
         ArrayList<BufferedImage> images = new ArrayList<>();
         for (int i = 1; i < 6; i++) {
@@ -204,6 +205,7 @@ public class Player {
     public void idle() {
         if (!isJumping && !isFalling && !isRolling && !isAttacking) {
             currentAnimation = idleAnimation;
+            isMoving = false;
         }
     }
 
@@ -223,21 +225,17 @@ public class Player {
         }
     }
 
-    public void moveRight() {
+    public void moveLeft() {
+        xCoord -= MOVE_AMT;
         if (!isJumping && !isFalling && !isRolling && !isAttacking) {
-            if (xCoord + MOVE_AMT <= 1920 - getWidth()) {
-                currentAnimation = movingAnimation;
-                xCoord += MOVE_AMT;
-            }
+            currentAnimation = movingAnimation;
         }
     }
 
-    public void moveLeft() {
+    public void moveRight() {
+        xCoord += MOVE_AMT;
         if (!isJumping && !isFalling && !isRolling && !isAttacking) {
-            if (xCoord - MOVE_AMT >= 0) {
-                currentAnimation = movingAnimation;
-                xCoord -= MOVE_AMT;
-            }
+            currentAnimation = movingAnimation;
         }
     }
 
@@ -260,9 +258,9 @@ public class Player {
     }
 
     public void moveDown() {
-        if (yCoord + MOVE_AMT <= groundY) {
-            currentAnimation = jumpingAftermathAnimation;
+        if (!isJumping && !isFalling && yCoord + MOVE_AMT <= groundY) {
             yCoord += MOVE_AMT;
+            currentAnimation = jumpingAftermathAnimation;
         }
     }
 
@@ -315,7 +313,7 @@ public class Player {
             if (currentVelocity > 0 && isJumping) {
                 isJumping = false;
                 isFalling = true;
-                if (!isAttacking && !isRolling) {
+                if (!isAttacking && !isRolling && !isMoving) {
                     currentAnimation = jumpingAftermathAnimation;
                     jumpingAftermathAnimation.reset();
                 }
@@ -326,8 +324,8 @@ public class Player {
                     canDoubleJump = true;
                 }
             }
-            if (yCoord >= groundY - getHeight()) {
-                yCoord = groundY - getHeight();
+            if (yCoord >= 600) {
+                yCoord = 600;
                 isJumping = false;
                 isFalling = false;
                 doubleJumpUsed = false;

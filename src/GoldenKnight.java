@@ -68,7 +68,7 @@ public class GoldenKnight extends Player {
         }
 
         xCoord = 1920 - idleImage.getWidth() - 100;
-        yCoord = player.getGroundY() - idleImage.getHeight();
+        yCoord = 600;
 
         activeSpikes = new ArrayList<>();
 
