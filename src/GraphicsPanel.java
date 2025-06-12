@@ -27,8 +27,12 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public GraphicsPanel() {
         accept = new JButton("ACCEPT");
         decline = new JButton("DECLINE");
-        timer = new Timer(16, this);
-        timer.start();
+
+        player = new Player();
+        boss1 = new GoldenKnight(player);
+        imp = new FodderEnemy(player);
+        pressedKeys = new boolean[128];
+
         try {
             background1 = ImageIO.read(new File("src/Background_0.png"));
             backgroundAsset1 = ImageIO.read(new File("src/Background_1.png"));
@@ -37,27 +41,26 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        player = new Player();
-        boss1 = new GoldenKnight(player);
-        imp = new FodderEnemy(player);
-        pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
+
         addKeyListener(this);
         addMouseListener(this);
-        setFocusable(true); // this line of code + one below makes this panel active for keylistener events
-        requestFocusInWindow();// see comment above
+        setFocusable(true);
+        requestFocusInWindow();
         accept.addActionListener(this);
         decline.addActionListener(this);
         add(accept);
         add(decline);
         accept.setVisible(false);
         decline.setVisible(false);
+
+        timer = new Timer(16, this);
+        timer.start();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (!inFirstScene && !inFinalScene) {
-            // the order that things get "painted" matter; we paint the background first
             g.drawImage(background1, 0, 0, null);
             g.drawImage(backgroundAsset1, 0, 0, null);
             g.drawImage(Npc, 1525, 500, null);
@@ -68,55 +71,23 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
         }
 
-        // UPDATED!
-        //g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
-        //g.drawImage(boss1.getGoldenKnightImage(), boss1.getxCoord(), boss1.getyCoord(), boss1.getWidth(), boss1.getHeight(), null);
-        //g.drawImage(imp.getFodderEnemyImage(), imp.getxCoord(), imp.getyCoord(), imp.getWidth(), imp.getHeight(), null);
         Font font = new Font("Verdana", Font.BOLD, 40);
         g.setFont(font);
         g.setColor(Color.RED);
         g.drawString("Player Health: " + player.getHealth(), 20, 70);
-        player.applyGravity();
 
-        // draw score
-        g.setFont(new Font("Courier New", Font.BOLD, 24));
-
-        // player moves left (A)
         if (pressedKeys[65]) {
             player.faceLeft();
             player.moveLeft();
         }
 
-        // player moves right (D)
         if (pressedKeys[68]) {
             player.faceRight();
             player.moveRight();
         }
 
-        // player jumps (space bar)
-        if (pressedKeys[32]) {
-            player.jump();
-        }
-
-        // temporary
-        if (pressedKeys[87]) {
-            player.jump();
-        }
-
-        // player moves down (S)
         if (pressedKeys[83]) {
             player.moveDown();
-        }
-
-
-        // player rolls (C)
-        if (pressedKeys[67]) {
-            if (!(player.getDirection())) {
-                player.RollLeft();
-            }
-            if (player.getDirection()) {
-                player.RollRight();
-            }
         }
 
         if (impAIStart) {
@@ -129,15 +100,12 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         if ((!inFirstScene && !inFinalScene) && player.getxCoord() <= 1500 && player.getxCoord() >= 1196) {
             accept.setVisible(true);
             decline.setVisible(true);
-            // Draw white box
             g.setColor(Color.WHITE);
             g.fillRect(100, 600, 400, 100);
 
-            // Draw border
             g.setColor(Color.BLACK);
             g.drawRect(100, 600, 400, 100);
 
-            // Draw text
             g.setColor(Color.BLACK);
             g.setFont(new Font("Arial", Font.PLAIN, 20));
             g.drawString("Hey, it's the Costco Guys here.", 120, 630);
@@ -150,10 +118,9 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             accept.setVisible(false);
             decline.setVisible(false);
         }
-        System.out.println("Player X: " + player.getyCoord());
+        System.out.println("Player Y: " + player.getyCoord());
     }
 
-    // ActionListener interface method
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -163,19 +130,33 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         accept.setVisible(false);
         decline.setVisible(false);
         requestFocusInWindow();
+
+        player.applyGravity();
+        player.updateRoll();
+
         repaint();
     }
 
-    // KeyListener interface methods
     @Override
-    public void keyTyped(KeyEvent e) { } // unimplemented
+    public void keyTyped(KeyEvent e) { }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        // see this for all keycodes: https://stackoverflow.com/questions/15313469/java-keyboard-keycodes-list
-        // A = 65, D = 68, S = 83, W = 87, left = 37, up = 38, right = 39, down = 40, space = 32, enter = 10
         int key = e.getKeyCode();
         pressedKeys[key] = true;
+
+        if (key == 67) {
+            player.startRoll();
+        }
+
+        if (key == 32 && !player.isJumping() && !player.isFalling()) {
+            player.jump();
+        }
+
+        if (key == 87 && !player.isJumping() && !player.isFalling()) {
+            player.jump();
+        }
+
         impAIStart = true;
         goldenKnightAIStart = true;
     }
@@ -184,13 +165,13 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         pressedKeys[key] = false;
-        player.idle();
+        if (!player.isJumping() && !player.isFalling() && !player.isRolling() && !player.isAttacking()) {
+            player.idle();
+        }
     }
-    // MouseListener interface methods
+
     @Override
-    public void mouseClicked(MouseEvent e) { }  // unimplemented because
-    // if you move your mouse while clicking, this method isn't
-    // called, so mouseReleased is best
+    public void mouseClicked(MouseEvent e) { }
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -226,9 +207,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) { } // unimplemented
+    public void mouseEntered(MouseEvent e) { }
 
     @Override
-    public void mouseExited(MouseEvent e) { } // unimplemented
+    public void mouseExited(MouseEvent e) { }
 }
-

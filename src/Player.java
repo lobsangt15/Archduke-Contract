@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Player {
-    private final int MOVE_AMT = 4;
+    private final int MOVE_AMT = 6;
     private BufferedImage right;
     private boolean facingRight;
     private int xCoord;
@@ -31,11 +31,13 @@ public class Player {
     private int doubleJumpVelocity = -18;
     private int currentVelocity = 0;
     private int gravityForce = 1;
-    private final int groundY = 400; // adjust if your "floor" is different
+    private final int groundY = 400;
+
+    private boolean isRolling = false;
 
     public Player() {
         facingRight = true;
-        xCoord = 300; // starting position is (50, 435), right on top of ground
+        xCoord = 300;
         yCoord = 400;
         healthPoints = 100;
         damageOutput = 15;
@@ -45,8 +47,6 @@ public class Player {
             System.out.println(e.getMessage());
         }
 
-        //The code below is used to create an ArrayList of BufferedImages to use for an Animation object
-        //By creating all the BufferedImages beforehand, we don't have to worry about lagging trying to read image files during gameplay
         ArrayList<BufferedImage> images = new ArrayList<>();
         for (int i = 1; i < 6; i++) {
             String filename = "src/images/IdleRight" + i + ".png";
@@ -59,7 +59,6 @@ public class Player {
         }
         idleAnimation = new Animation(images,100);
 
-        // up animation
         images = new ArrayList<>();
         for (int i = 1; i < 4; i++) {
             String filename = "src/images/JumpRight" + i + ".png";
@@ -72,9 +71,6 @@ public class Player {
         }
         jumpingAnimation = new Animation(images,50);
 
-
-
-        // down animation
         images = new ArrayList<>();
         for (int i = 1; i < 3; i++) {
             String filename = "src/images/JumpAftermathRight" + i + ".png";
@@ -85,16 +81,8 @@ public class Player {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        jumpingAftermathAnimation = new Animation(images,125);
+        jumpingAftermathAnimation = new Animation(images,125, true);
 
-        // left
-
-
-
-
-        // right
-
-        // roll
         images = new ArrayList<>();
         for (int i = 1; i < 13; i++) {
             String filename = "src/images/RollRight" + i + ".png";
@@ -105,9 +93,8 @@ public class Player {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        rollingAnimation = new Animation(images,75);
+        rollingAnimation = new Animation(images,75, true);
 
-        // right
         images = new ArrayList<>();
         for (int i = 1; i < 11; i++) {
             String filename = "src/images/RunRight" + i + ".png";
@@ -118,7 +105,7 @@ public class Player {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        movingAnimation = new Animation(images,50);
+        movingAnimation = new Animation(images,35);
 
         images = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
@@ -130,18 +117,27 @@ public class Player {
                 System.out.println(e.getMessage() + " " + filename);
             }
         }
-        attackAnimation = new Animation(images,50);
+        attackAnimation = new Animation(images,50, true);
 
         currentAnimation = idleAnimation;
+    }
+
+    public boolean isRolling() {
+        return isRolling;
     }
 
     public boolean isAttacking() {
         return isAttacking;
     }
 
-    //This function is changed from the previous version to let the player turn left and right
-    //This version of the function, when combined with getWidth() and getHeight()
-    //Allow the player to turn without needing separate images for left and right
+    public boolean isJumping() {
+        return isJumping;
+    }
+
+    public boolean isFalling() {
+        return isFalling;
+    }
+
     public int getxCoord() {
         if (facingRight) {
             return xCoord;
@@ -157,9 +153,7 @@ public class Player {
     public int getyCoord() {
         return yCoord;
     }
-    //These functions are newly added to let the player turn left and right
-    //These functions when combined with the updated getxCoord()
-    //Allow the player to turn without needing separate images for left and right
+
     public int getHeight() {
         return getPlayerImage().getHeight();
     }
@@ -173,7 +167,9 @@ public class Player {
     }
 
     public void idle() {
-        currentAnimation = idleAnimation;
+        if (!isJumping && !isFalling && !isRolling && !isAttacking) {
+            currentAnimation = idleAnimation;
+        }
     }
 
     public void faceRight() {
@@ -184,7 +180,6 @@ public class Player {
         facingRight = false;
     }
 
-    // newly added, used for right-clicking to turn
     public void turn() {
         if (facingRight) {
             faceLeft();
@@ -194,36 +189,38 @@ public class Player {
     }
 
     public void moveRight() {
-        if (xCoord + MOVE_AMT <= 1520) {
-            if (!isJumping && !isFalling) {
+        if (!isJumping && !isFalling && !isRolling && !isAttacking) {
+            if (xCoord + MOVE_AMT <= 1520) {
                 currentAnimation = movingAnimation;
+                xCoord += MOVE_AMT;
             }
-            xCoord += MOVE_AMT;
         }
     }
 
     public void moveLeft() {
-        if (xCoord - MOVE_AMT >= -200) {
-            if (!isJumping && !isFalling) {
+        if (!isJumping && !isFalling && !isRolling && !isAttacking) {
+            if (xCoord - MOVE_AMT >= -200) {
                 currentAnimation = movingAnimation;
+                xCoord -= MOVE_AMT;
             }
-            xCoord -= MOVE_AMT;
         }
     }
 
     public void jump() {
-        if (!isJumping && !isFalling) {
-            currentVelocity = jumpVelocity;
-            isJumping = true;
-            doubleJumpUsed = false;
-            doubleJumpTimer = 0;
-            currentAnimation = jumpingAnimation;
-        } else if (canDoubleJump && !doubleJumpUsed) {
-            currentVelocity = doubleJumpVelocity;
-            isJumping = true;
-            isFalling = false;
-            doubleJumpUsed = true;
-            currentAnimation = jumpingAnimation;
+        if (!isRolling && !isAttacking) {
+            if (!isJumping && !isFalling) {
+                currentVelocity = jumpVelocity;
+                isJumping = true;
+                doubleJumpUsed = false;
+                doubleJumpTimer = 0;
+                currentAnimation = jumpingAnimation;
+            } else if (canDoubleJump && !doubleJumpUsed) {
+                currentVelocity = doubleJumpVelocity;
+                isJumping = true;
+                isFalling = false;
+                doubleJumpUsed = true;
+                currentAnimation = jumpingAnimation;
+            }
         }
     }
 
@@ -236,32 +233,42 @@ public class Player {
         }
     }
 
-    public void RollRight() {
-        if (xCoord + MOVE_AMT <= 1520) {
+    public void startRoll() {
+        if (!isRolling && !isJumping && !isFalling && !isAttacking) {
+            isRolling = true;
+            rollingAnimation.reset();
             currentAnimation = rollingAnimation;
-            xCoord += MOVE_AMT;
         }
     }
 
-    public void RollLeft() {
-        if (xCoord - MOVE_AMT >= -200) {
-            currentAnimation = rollingAnimation;
-            xCoord -= MOVE_AMT;
+    public void updateRoll() {
+        if (isRolling) {
+            if (facingRight) {
+                xCoord += MOVE_AMT * 2;
+            } else {
+                xCoord -= MOVE_AMT * 2;
+            }
+
+            if (rollingAnimation.isDone()) {
+                isRolling = false;
+                idle();
+            }
         }
     }
 
     public void AttackRight() {
-        if (xCoord + MOVE_AMT <= 1520) {
+        if (!isAttacking && !isRolling && !isJumping && !isFalling) {
             currentAnimation = attackAnimation;
             isAttacking = true;
-            // Don't move during attack if you want a static position
+            attackAnimation.reset();
         }
     }
 
     public void AttackLeft() {
-        if (xCoord - MOVE_AMT >= -200) {
+        if (!isAttacking && !isRolling && !isJumping && !isFalling) {
             currentAnimation = attackAnimation;
             isAttacking = true;
+            attackAnimation.reset();
         }
     }
 
@@ -273,7 +280,10 @@ public class Player {
             if (currentVelocity > 0 && isJumping) {
                 isJumping = false;
                 isFalling = true;
-                currentAnimation = jumpingAftermathAnimation;
+                if (!isAttacking && !isRolling) {
+                    currentAnimation = jumpingAftermathAnimation;
+                    jumpingAftermathAnimation.reset();
+                }
             }
             if (!canDoubleJump && !doubleJumpUsed) {
                 doubleJumpTimer++;
@@ -289,20 +299,21 @@ public class Player {
                 canDoubleJump = false;
                 doubleJumpTimer = 0;
                 currentVelocity = 0;
-                currentAnimation = idleAnimation;
+                if (!isRolling && !isAttacking) {
+                    currentAnimation = idleAnimation;
+                }
             }
         }
     }
 
     public BufferedImage getPlayerImage() {
-        return currentAnimation.getActiveFrame();  // updated
+        return currentAnimation.getActiveFrame();
     }
 
     public int getHealth() {
         return healthPoints;
     }
 
-    // we use a "bounding Rectangle" for detecting collision
     public Rectangle playerRect() {
         int imageHeight = getPlayerImage().getHeight();
         int imageWidth = getPlayerImage().getWidth();

@@ -9,35 +9,53 @@ public class Animation implements ActionListener {
     private Timer timer;
     private int currentFrame;
     private boolean done;
+    private boolean singleCycle;
 
-    public Animation(ArrayList<BufferedImage> frames, int delay) {
+    public Animation(ArrayList<BufferedImage> frames, int delay, boolean singleCycle) {
         this.frames = frames;
+        this.singleCycle = singleCycle;
         currentFrame = 0;
+        done = false;
         timer = new Timer(delay, this);
         timer.start();
+    }
+
+    public Animation(ArrayList<BufferedImage> frames, int delay) {
+        this(frames, delay, false);
     }
 
     public BufferedImage getActiveFrame() {
         return frames.get(currentFrame);
     }
 
+    public ArrayList<BufferedImage> getFrames() {
+        return frames;
+    }
+
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof Timer) {
-            //This advances the animation to the next frame
-            //It also uses modulus to reset the frame to the beginning after the last frame
-            //In other words, this allows our animation to loop
-            currentFrame = (currentFrame + 1) % frames.size();
+            currentFrame++;
+            if (currentFrame >= frames.size()) {
+                if (singleCycle) {
+                    currentFrame = frames.size() - 1;
+                    timer.stop();
+                    done = true;
+                } else {
+                    currentFrame = 0;
+                }
+            }
         }
     }
 
     public boolean isDone() {
-        done = currentFrame >= frames.size() - 1;
         return done;
     }
 
     public void reset() {
         currentFrame = 0;
         done = false;
-        timer.restart();
+        if (singleCycle && !timer.isRunning()) {
+            timer.start();
+        }
     }
 }
