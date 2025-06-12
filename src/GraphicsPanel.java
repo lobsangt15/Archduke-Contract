@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.sound.sampled.*;
 
 public class GraphicsPanel extends JPanel implements ActionListener, KeyListener, MouseListener {
     private BufferedImage background1;
@@ -24,6 +25,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private JButton decline;
     private boolean inFirstScene;
     private boolean inFinalScene;
+    private boolean hasPlayedNpcSound = false;
 
     public GraphicsPanel() {
         accept = new JButton("ACCEPT");
@@ -123,7 +125,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             player.moveDown();
         }
 
-        if ((!inFirstScene && !inFinalScene) && player.getxCoord() <= 1500 && player.getxCoord() >= 1196) {
+        if ((!inFirstScene && !inFinalScene) && player.getxCoord() <= 1750 && player.getxCoord() >= 1400) {
             accept.setVisible(true);
             decline.setVisible(true);
             g.setColor(Color.WHITE);
@@ -137,12 +139,17 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             g.drawString("Hey, it's the Costco Guys here.", 120, 630);
             g.drawString("A golden knight has abducted the Rizzler.", 120, 655);
             g.drawString("Find him for 5 big booms!", 120, 680);
+            if (!hasPlayedNpcSound) {
+                playSound();
+                hasPlayedNpcSound = true;
+            }
 
             accept.setLocation(100, 700);
             decline.setLocation(200, 700);
         } else {
             accept.setVisible(false);
             decline.setVisible(false);
+            hasPlayedNpcSound = false;
         }
         System.out.println("Player Y: " + player.getyCoord());
     }
@@ -269,4 +276,21 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
     @Override
     public void mouseExited(MouseEvent e) { }
+
+    public void playSound() {
+        File audioFile;
+        if (!inFirstScene) {
+            audioFile = new File("src/NPC_Speech.wav");
+        } else {
+            audioFile = new File("src/Big_Booms.wav");
+        }
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
