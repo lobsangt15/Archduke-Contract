@@ -88,28 +88,23 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
         } else if (inFirstScene) {
             g.drawImage(First_Scene, 0, 0, null);
-            player.setyCoord(600);
+            player.setyCoord(800);
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
 
             g.drawImage(goldenKnight.getGoldenKnightImage(), goldenKnight.getxCoord(), goldenKnight.getyCoord(), goldenKnight.getWidth(), goldenKnight.getHeight(), null);
-
-            for (Spike s : goldenKnight.getActiveSpikes()) {
-                g.drawImage(s.getImage(), s.getX(), s.getY(), null);
+            BufferedImage currentTitleImage = goldenKnight.isPhaseTwo() ? luciferTitleImage : titleImage;
+            if (currentTitleImage != null) {
+                int titleX = (getWidth() - currentTitleImage.getWidth()) / 2;
+                int titleY = 20;
+                g.drawImage(currentTitleImage, titleX, titleY, null);
             }
-        }
 
-        BufferedImage currentTitleImage = goldenKnight.isPhaseTwo() ? luciferTitleImage : titleImage;
-        if (currentTitleImage != null) {
-            int titleX = (getWidth() - currentTitleImage.getWidth()) / 2;
-            int titleY = 20;
-            g.drawImage(currentTitleImage, titleX, titleY, null);
+            Font font = new Font("Verdana", Font.BOLD, 40);
+            g.setFont(font);
+            g.setColor(Color.RED);
+            g.drawString("Player Health: " + player.getHealth(), 20, 70);
+            g.drawString("Golden Knight Health: " + goldenKnight.getHealth(), 20, 120);
         }
-
-        Font font = new Font("Verdana", Font.BOLD, 40);
-        g.setFont(font);
-        g.setColor(Color.RED);
-        g.drawString("Player Health: " + player.getHealth(), 20, 70);
-        g.drawString("Golden Knight Health: " + goldenKnight.getHealth(), 20, 120);
 
         if (pressedKeys[65]) {
             player.faceLeft();
@@ -170,7 +165,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         player.updateRoll();
 
         if (inFirstScene) {
-            goldenKnight.AI(player);
             handleCollisions();
         }
 
@@ -178,6 +172,12 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             player.isAttacking = false;
             player.idle();
             System.out.println("Player attack animation finished!");
+        }
+
+        if (goldenKnight.isAttacking() && (goldenKnight.phaseOneAttackAnimation.isDone() || goldenKnight.luciferSlashAnimation.isDone())) {
+            goldenKnight.isAttacking = false;
+            goldenKnight.idle();
+            System.out.println("Golden Knight attack animation finished!");
         }
 
         repaint();
@@ -201,24 +201,6 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
                 System.out.println("Golden Knight hit player! Player Health: " + player.getHealth());
             }
         }
-
-        ArrayList<Spike> spikesToRemove = new ArrayList<>();
-        for (Spike s : goldenKnight.getActiveSpikes()) {
-            s.update();
-            if (s.isActive() && playerRect.intersects(s.getRect())) {
-                if (player.isJumping()) {
-                    System.out.println("Player jumped over spike. Spike removed.");
-                } else {
-                    player.takeDamage(s.getDamage());
-                    System.out.println("Player hit by spike! Player Health: " + player.getHealth());
-                }
-                s.deactivate();
-            }
-            if (!s.isActive()) {
-                spikesToRemove.add(s);
-            }
-        }
-        goldenKnight.getActiveSpikes().removeAll(spikesToRemove);
     }
 
     @Override
@@ -240,6 +222,12 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         if (key == 87 && !player.isJumping() && !player.isFalling()) {
             player.jump();
         }
+
+        if (key == 40) {
+            if (!goldenKnight.isAttacking()) {
+                goldenKnight.Attack();
+            }
+        }
     }
 
     @Override
@@ -248,6 +236,9 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         pressedKeys[key] = false;
         if (!player.isJumping() && !player.isFalling() && !player.isRolling() && !player.isAttacking()) {
             player.idle();
+        }
+        if (!goldenKnight.isAttacking()) {
+            goldenKnight.idle();
         }
     }
 
