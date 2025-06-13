@@ -27,6 +27,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private boolean inFinalScene;
     private boolean hasPlayedNpcSound = false;
     public boolean isHit = false;
+    private boolean[] goldenKnightKeys;
 
     public GraphicsPanel() {
         accept = new JButton("ACCEPT");
@@ -54,6 +55,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         goldenKnight = new GoldenKnight(player);
 
         pressedKeys = new boolean[128];
+        goldenKnightKeys = new boolean[128];
 
         try {
             background1 = ImageIO.read(new File("src/Background_0.png"));
@@ -180,8 +182,17 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         decline.setVisible(false);
         requestFocusInWindow();
 
+        // Apply gravity and update player state
         player.applyGravity();
         player.updateRoll();
+
+        // 🔽 Add this: Handle GoldenKnight movement continuously
+        if (goldenKnightKeys[37]) {  // LEFT arrow
+            goldenKnight.moveLeft();
+        }
+        if (goldenKnightKeys[39]) {  // RIGHT arrow
+            goldenKnight.moveRight();
+        }
 
         if (inFirstScene) {
             handleCollisions();
@@ -235,24 +246,19 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         pressedKeys[key] = true;
+        goldenKnightKeys[key] = true;
 
         if (key == 67) {
             player.startRoll();
         }
 
-        if (key == 32 && !player.isJumping() && !player.isFalling()) {
+        if ((key == 32 || key == 87) && !player.isJumping() && !player.isFalling()) {
             player.jump();
         }
 
-        if (key == 87 && !player.isJumping() && !player.isFalling()) {
-            player.jump();
-        }
-
-        if (key == 40) {
-            if (!goldenKnight.isAttacking()) {
-                goldenKnight.Attack();
-                isHit = false;
-            }
+        if (key == 40 && !goldenKnight.isAttacking()) {
+            goldenKnight.Attack();
+            isHit = false;
         }
 
         if (key == 39) {
@@ -268,6 +274,8 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         pressedKeys[key] = false;
+        goldenKnightKeys[key] = false;
+
         if (!player.isJumping() && !player.isFalling() && !player.isRolling() && !player.isAttacking()) {
             player.idle();
         }
