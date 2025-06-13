@@ -370,17 +370,21 @@ public class Player {
 
     public void unlockSwordUpgrade() {
         hasSwordUpgrade = true;
-        damageOutput += 10;
+        damageOutput += 2;
         System.out.println("Sword upgrade unlocked! New damage: " + damageOutput);
     }
 
     public void unlockArmorUpgrade() {
         hasArmorUpgrade = true;
-        healthPoints += 100;
+        healthPoints += 20;
         System.out.println("Armor upgrade unlocked! New health: " + healthPoints);
     }
 
     public boolean isDead() {
         return getHealth() == 0;
+    }
+
+    public void increaseHealth(int num) {
+        healthPoints += num;
     }
 }

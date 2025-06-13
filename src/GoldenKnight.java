@@ -31,7 +31,7 @@ public class GoldenKnight extends Player {
     private final int PHASE_TWO_HEALTH = 200;
     private final int PHASE_TWO_DAMAGE_BONUS = 5;
     private final int BASE_SPIKE_DAMAGE = 10;
-    private final int KnightAttackRange = 150;
+    private final int KnightAttackRange = 200;
 
     boolean isAttacking = false;
 
@@ -39,8 +39,8 @@ public class GoldenKnight extends Player {
         this.player = player;
         facingRight = false;
 
-        healthPoints = 100;
-        damageOutput = 5;
+        healthPoints = 300;
+        damageOutput = 7;
 
         try {
             idleImage = ImageIO.read(new File("src/images/GoldenKnightIdleRight1.png"));
@@ -116,6 +116,7 @@ public class GoldenKnight extends Player {
 
     public void moveLeft() {
         xCoord -= MOVE_AMT;
+        facingRight = false;
         if (!isAttacking) {
             idle();
         }
@@ -123,6 +124,7 @@ public class GoldenKnight extends Player {
 
     public void moveRight() {
         xCoord += MOVE_AMT;
+        facingRight = true;
         if (!isAttacking) {
             idle();
         }
@@ -224,7 +226,7 @@ public class GoldenKnight extends Player {
             if (facingRight) {
                 hitboxX = xCoord + getPlayerImage().getWidth() - (KnightAttackRange / 2);
             } else {
-                hitboxX = xCoord - KnightAttackRange / 2;
+                hitboxX = xCoord - KnightAttackRange/2;
             }
             return new Rectangle(hitboxX, hitboxY, Math.abs(hitboxWidth), hitboxHeight);
         }

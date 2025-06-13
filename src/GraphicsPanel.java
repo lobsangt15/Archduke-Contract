@@ -14,6 +14,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private BufferedImage backgroundAsset1;
     private BufferedImage First_Scene;
     private BufferedImage Npc;
+    private BufferedImage NPC2;
     private BufferedImage titleImage;
     private BufferedImage luciferTitleImage;
     private Timer timer;
@@ -29,6 +30,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public boolean isHit = false;
     private boolean[] goldenKnightKeys;
     private boolean gameOver = false;
+    private MiniGamePanel miniGame;
 
     public GraphicsPanel() {
         accept = new JButton("ACCEPT");
@@ -62,6 +64,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             background1 = ImageIO.read(new File("src/Background_0.png"));
             backgroundAsset1 = ImageIO.read(new File("src/Background_1.png"));
             Npc = ImageIO.read(new File("src/images/Costco_Guys.png"));
+            NPC2 = ImageIO.read(new File("src/images/Costco_Guys1.png"));
             First_Scene = ImageIO.read(new File("src/images/First_Scene.jpg"));
             titleImage = ImageIO.read(new File("src/images/TITLEARCHKNIGHT.png"));
             luciferTitleImage = ImageIO.read(new File("src/images/LUCIFERTITLE.png"));
@@ -106,9 +109,19 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         if (!inFirstScene && !inFinalScene) {
             g.drawImage(background1, 0, 0, null);
             g.drawImage(backgroundAsset1, 0, 0, null);
-            g.drawImage(Npc, 1525, 500, null);
+            if (gameOver) {
+                g.drawImage(NPC2, 1525, 500, null);
+                player.setxCoord(300);
+                player.setyCoord(600);
+            } else {
+                g.drawImage(Npc, 1525, 500, null);
+            }
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
         } else if (inFirstScene) {
+            if (miniGame.hasWon()) {
+                player.increaseHealth(20);
+                miniGame.collectedBuff();
+            }
             g.drawImage(First_Scene, 0, 0, null);
             player.setyCoord(800);
             g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
@@ -126,6 +139,28 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             g.setColor(Color.RED);
             g.drawString("Player Health: " + player.getHealth(), 20, 70);
             g.drawString("Golden Knight Health: " + goldenKnight.getHealth(), 20, 120);
+        }
+
+        if (gameOver) {
+            g.setColor(new Color(0, 0, 0, 180)); // semi-transparent black
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.setColor(Color.RED);
+            g.setFont(new Font("Verdana", Font.BOLD, 80));
+            g.drawString("GAME OVER", getWidth() / 2 - 240, getHeight() / 2 - 20);
+
+            g.setFont(new Font("Arial", Font.PLAIN, 30));
+            String message;
+            if (player.isDead()) {
+                message = "You have been defeated!";
+            } else {
+                message = "    You won!";
+                if (!hasPlayedNpcSound) {
+                    playSound();
+                    hasPlayedNpcSound = true;
+                }
+            }
+            g.drawString(message, getWidth() / 2 - 130, getHeight() / 2 + 40);
         }
 
         if (pressedKeys[65]) {
@@ -169,18 +204,28 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             hasPlayedNpcSound = false;
         }
         System.out.println("Player Y: " + player.getyCoord());
+    }
 
-        if (gameOver) {
-            g.setColor(new Color(0, 0, 0, 180)); // semi-transparent black
-            g.fillRect(0, 0, getWidth(), getHeight());
+    public void launchMiniGameBeforeBoss() {
+        JFrame miniFrame = new JFrame("Minigame while game loading");
+        miniFrame.setSize(600, 400);
+        miniFrame.setLocationRelativeTo(null);
+        miniFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        miniFrame.setResizable(false);
 
-            g.setColor(Color.RED);
-            g.setFont(new Font("Verdana", Font.BOLD, 80));
-            g.drawString("GAME OVER", getWidth() / 2 - 240, getHeight() / 2 - 20);
+        miniGame = new MiniGamePanel(() -> {
+            miniFrame.dispose();
+            inFirstScene = true;
+            player.setxCoord(50);
+            player.setyCoord(player.getGroundY() - player.getHeight());
+        });
 
-            g.setFont(new Font("Arial", Font.PLAIN, 30));
-            String message = player.getHealth() <= 0 ? "You have been defeated!" : "You won!";
-            g.drawString(message, getWidth() / 2 - 130, getHeight() / 2 + 40);
+        miniFrame.add(miniGame);
+        miniFrame.setVisible(true);
+        miniGame.startGame();
+
+        if (miniGame.hasWon()) {
+            player.increaseHealth(20);
         }
     }
 
@@ -188,9 +233,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == accept) {
-            inFirstScene = true;
-            player.setxCoord(50);
-            player.setyCoord(player.getGroundY() - player.getHeight());
+            launchMiniGameBeforeBoss();
         }
         accept.setVisible(false);
         decline.setVisible(false);
@@ -226,9 +269,12 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
         if (goldenKnight.isDead() || player.isDead()) {
             gameOver = true;
+
+            if (goldenKnight.isDead()) {
+                inFirstScene = false; // <-- MOVE THIS HERE
+            }
             timer.stop();
         }
-
         repaint();
     }
 
@@ -332,7 +378,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
 
     public void playSound() {
         File audioFile;
-        if (!inFirstScene) {
+        if (!gameOver) {
             audioFile = new File("src/NPC_Speech.wav");
         } else {
             audioFile = new File("src/Big_Booms.wav");
