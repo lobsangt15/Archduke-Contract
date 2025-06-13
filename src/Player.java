@@ -35,6 +35,8 @@ public class Player {
     private int gravityForce = 1;
     private final int groundY = 1150;
     private final int PLAYER_ATTACK_RANGE = 70;
+    private boolean hasSwordUpgrade = false;
+    private boolean hasArmorUpgrade = false;
 
     private boolean isRolling = false;
 
@@ -364,5 +366,17 @@ public class Player {
         int imageWidth = getPlayerImage().getWidth();
         Rectangle rect = new Rectangle(xCoord, yCoord, imageWidth, imageHeight);
         return rect;
+    }
+
+    public void unlockSwordUpgrade() {
+        hasSwordUpgrade = true;
+        damageOutput += 10;
+        System.out.println("Sword upgrade unlocked! New damage: " + damageOutput);
+    }
+
+    public void unlockArmorUpgrade() {
+        hasArmorUpgrade = true;
+        healthPoints += 100;
+        System.out.println("Armor upgrade unlocked! New health: " + healthPoints);
     }
 }

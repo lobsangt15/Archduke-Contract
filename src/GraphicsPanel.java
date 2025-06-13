@@ -33,6 +33,24 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         decline = new JButton("DECLINE");
 
         player = new Player();
+        String[] options = {"TRASH gear (hard mode)", "GOOD gear"};
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "Do you want the TRASH gear or the GOOD gear?",
+                "Choose Your Loadout",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (choice == 1) {
+            player.unlockSwordUpgrade();
+            player.unlockArmorUpgrade();
+        } else {
+            System.out.println("You chose the trash gear. GL.");
+        }
         goldenKnight = new GoldenKnight(player);
 
         pressedKeys = new boolean[128];
