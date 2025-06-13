@@ -53,7 +53,7 @@ public class Player {
         }
 
         healthPoints = 100;
-        damageOutput = 10;
+        damageOutput = 8;
 
         ArrayList<BufferedImage> images = new ArrayList<>();
         for (int i = 1; i < 6; i++) {
@@ -370,7 +370,7 @@ public class Player {
 
     public void unlockSwordUpgrade() {
         hasSwordUpgrade = true;
-        damageOutput += 2;
+        damageOutput += 7;
         System.out.println("Sword upgrade unlocked! New damage: " + damageOutput);
     }
 
