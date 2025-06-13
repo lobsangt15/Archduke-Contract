@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GoldenKnight extends Player {
+    private static final int MOVE_AMT = 10;
     private BufferedImage idleImage;
     private boolean facingRight;
     private int xCoord;
@@ -27,25 +28,19 @@ public class GoldenKnight extends Player {
     private boolean isDead = false;
     private boolean isRebirthing = false;
     private boolean isPhaseTwo = false;
-    private final int PHASE_TWO_HEALTH = 2000;
+    private final int PHASE_TWO_HEALTH = 200;
     private final int PHASE_TWO_DAMAGE_BONUS = 5;
     private final int BASE_SPIKE_DAMAGE = 10;
+    private final int KnightAttackRange = 150;
 
     boolean isAttacking = false;
-    private int attackCooldownTimer = 0;
-    private final int ATTACK_COOLDOWN = 300;
-    private final int ATTACK_RANGE = 150;
-
-    private Random random = new Random();
-    private BufferedImage spikeImage;
-    private ArrayList<Spike> activeSpikes;
 
     public GoldenKnight(Player player) {
         this.player = player;
         facingRight = false;
 
-        healthPoints = 1000;
-        damageOutput = 20;
+        healthPoints = 100;
+        damageOutput = 5;
 
         try {
             idleImage = ImageIO.read(new File("src/images/GoldenKnightIdleRight1.png"));
@@ -119,6 +114,20 @@ public class GoldenKnight extends Player {
         }
     }
 
+    public void moveLeft() {
+        xCoord -= MOVE_AMT;
+        if (!isAttacking) {
+            idle();
+        }
+    }
+
+    public void moveRight() {
+        xCoord += MOVE_AMT;
+        if (!isAttacking) {
+            idle();
+        }
+    }
+
     public void idle() {
         if (!isPhaseTwo) {
             currentAnimation = idleAnimation;
@@ -176,10 +185,6 @@ public class GoldenKnight extends Player {
         return currentAnimation.getActiveFrame();
     }
 
-    public ArrayList<Spike> getActiveSpikes() {
-        return activeSpikes;
-    }
-
     public int getHealth() {
         return healthPoints;
     }
@@ -213,13 +218,13 @@ public class GoldenKnight extends Player {
         if (isAttacking) {
             int hitboxX;
             int hitboxY = yCoord;
-            int hitboxWidth = currentAnimation.getActiveFrame().getWidth();
+            int hitboxWidth = KnightAttackRange;
             int hitboxHeight = currentAnimation.getActiveFrame().getHeight();
 
             if (facingRight) {
-                hitboxX = xCoord;
+                hitboxX = xCoord + getPlayerImage().getWidth() - (KnightAttackRange / 2);
             } else {
-                hitboxX = xCoord - hitboxWidth;
+                hitboxX = xCoord - KnightAttackRange / 2;
             }
             return new Rectangle(hitboxX, hitboxY, Math.abs(hitboxWidth), hitboxHeight);
         }

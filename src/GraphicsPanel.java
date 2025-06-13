@@ -26,6 +26,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private boolean inFirstScene;
     private boolean inFinalScene;
     private boolean hasPlayedNpcSound = false;
+    public boolean isHit = false;
 
     public GraphicsPanel() {
         accept = new JButton("ACCEPT");
@@ -189,16 +190,22 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         if (player.isAttacking()) {
             Rectangle playerAttackHitbox = player.getPlayerAttackHitbox();
             if (playerAttackHitbox != null && playerAttackHitbox.intersects(goldenKnight.getBossRect()) && !goldenKnight.isDead() && !goldenKnight.isRebirthing()) {
-                goldenKnight.takeDamage(player.getDamageOutput());
-                System.out.println("Player successfully hit Golden Knight!");
+                if (!isHit) {
+                    goldenKnight.takeDamage(player.getDamageOutput());
+                    System.out.println("Player successfully hit Golden Knight!");
+                    isHit = true;
+                }
             }
         }
 
         if (goldenKnight.isAttacking()) {
             Rectangle goldenKnightAttackHitbox = goldenKnight.getAttackHitbox();
             if (goldenKnightAttackHitbox != null && goldenKnightAttackHitbox.intersects(playerRect)) {
-                player.takeDamage(goldenKnight.getDamageOutput());
-                System.out.println("Golden Knight hit player! Player Health: " + player.getHealth());
+                if (!isHit) {
+                    player.takeDamage(goldenKnight.getDamageOutput());
+                    System.out.println("Golden Knight hit player! Player Health: " + player.getHealth());
+                    isHit = true;
+                }
             }
         }
     }
@@ -226,7 +233,16 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
         if (key == 40) {
             if (!goldenKnight.isAttacking()) {
                 goldenKnight.Attack();
+                isHit = false;
             }
+        }
+
+        if (key == 39) {
+            goldenKnight.moveRight();
+        }
+
+        if (key == 37) {
+            goldenKnight.moveLeft();
         }
     }
 
@@ -248,6 +264,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     @Override
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
+            isHit = false;
             if (!player.isAttacking() && !player.isRolling() && !player.isJumping() && !player.isFalling()) {
                 if (!(player.getDirection())) {
                     player.AttackLeft();
