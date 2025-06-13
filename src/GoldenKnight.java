@@ -232,7 +232,7 @@ public class GoldenKnight extends Player {
     }
 
     public boolean isDead() {
-        return isDead;
+        return getHealth() == 0;
     }
 
     public boolean isRebirthing() {

@@ -28,6 +28,7 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
     private boolean hasPlayedNpcSound = false;
     public boolean isHit = false;
     private boolean[] goldenKnightKeys;
+    private boolean gameOver = false;
 
     public GraphicsPanel() {
         accept = new JButton("ACCEPT");
@@ -168,6 +169,19 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             hasPlayedNpcSound = false;
         }
         System.out.println("Player Y: " + player.getyCoord());
+
+        if (gameOver) {
+            g.setColor(new Color(0, 0, 0, 180)); // semi-transparent black
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.setColor(Color.RED);
+            g.setFont(new Font("Verdana", Font.BOLD, 80));
+            g.drawString("GAME OVER", getWidth() / 2 - 240, getHeight() / 2 - 20);
+
+            g.setFont(new Font("Arial", Font.PLAIN, 30));
+            String message = player.getHealth() <= 0 ? "You have been defeated!" : "You won!";
+            g.drawString(message, getWidth() / 2 - 130, getHeight() / 2 + 40);
+        }
     }
 
     @Override
@@ -208,6 +222,11 @@ public class GraphicsPanel extends JPanel implements ActionListener, KeyListener
             goldenKnight.isAttacking = false;
             goldenKnight.idle();
             System.out.println("Golden Knight attack animation finished!");
+        }
+
+        if (goldenKnight.isDead() || player.isDead()) {
+            gameOver = true;
+            timer.stop();
         }
 
         repaint();

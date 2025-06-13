@@ -379,4 +379,8 @@ public class Player {
         healthPoints += 100;
         System.out.println("Armor upgrade unlocked! New health: " + healthPoints);
     }
+
+    public boolean isDead() {
+        return getHealth() == 0;
+    }
 }
